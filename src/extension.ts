@@ -23,6 +23,18 @@ export function activate({
     }),
   );
   subscriptions.push(
+    vscode.commands.registerCommand('pr-finder.refresh', () => {
+      // The code you place here will be executed every time your command is executed
+      Panel.kill();
+      Panel.createOrShow(extensionUri);
+      setTimeout(() => {
+        vscode.commands.executeCommand(
+          'workbench.action.webview.openDeveloperTools',
+        );
+      }, 500);
+    }),
+  );
+  subscriptions.push(
     vscode.commands.registerCommand('pr-finder.askQuestion', async () => {
       const answer = await vscode.window.showInformationMessage(
         'How are you cheese?',
