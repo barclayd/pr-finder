@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
@@ -27,6 +28,9 @@ export default fs
         resolve({
           browser: true,
           dedupe: ['react'],
+        }),
+        replace({
+          'process.env.NODE_ENV': JSON.stringify('development'),
         }),
         commonjs(),
         typescript({
