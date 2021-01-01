@@ -12,17 +12,22 @@ export function activate(context: vscode.ExtensionContext) {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand(
-    'pr-finder.helloWorld',
-    () => {
+  context.subscriptions.push(
+    vscode.commands.registerCommand('pr-finder.helloWorld', () => {
       // The code you place here will be executed every time your command is executed
 
       // Display a message box to the user
-      vscode.window.showInformationMessage('Hello World from pr-finder!');
-    },
+      vscode.window.showInformationMessage('Hello from pr-finder!');
+    }),
   );
-
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    vscode.commands.registerCommand('pr-finder.askQuestion', async () => {
+      const answer = await vscode.window.showInformationMessage('How are you cheese?', 'good', 'bad');
+      if (answer === 'bad') {
+        vscode.window.showInformationMessage('Try and have a better day tomorrow');
+      }
+    }),
+  );
 }
 
 // this method is called when your extension is deactivated
