@@ -30,7 +30,7 @@ export default fs
           dedupe: ['react'],
         }),
         replace({
-          'process.env.NODE_ENV': JSON.stringify('development'),
+          'process.env.NODE_ENV': JSON.stringify('production'),
         }),
         commonjs(),
         typescript({

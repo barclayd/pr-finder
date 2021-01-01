@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:pr-finder.helloWorld",
-    "onCommand:pr-finder.askQuestion"
+    "onCommand:pr-finder.askQuestion",
+    "onCommand:pr-finder.refresh"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -24,6 +25,11 @@
         "command": "pr-finder.askQuestion",
         "category": "PRFinder",
         "title": "Ask Question"
+      },
+      {
+        "command": "pr-finder.refresh",
+        "category": "PRFinder",
+        "title": "Refresh"
       }
     ]
   },
