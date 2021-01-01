@@ -124,29 +124,21 @@ export class Panel {
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     // // // And the uri we use to load this script in the webview
-    // const scriptUri = webview.asWebviewUri(
-    //   vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/swiper.js'),
-    // );
-
-    // Local path to css styles
-    // const styleResetPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   'media',
-    //   'reset.css',
-    // );
-    // const stylesPathMainPath = vscode.Uri.joinPath(
-    //   this._extensionUri,
-    //   'media',
-    //   'vscode.css',
-    // );
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'),
+    );
 
     // Uri to load styles into webview
-    // const stylesResetUri = webview.asWebviewUri(styleResetPath);
-    // const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+    const stylesResetUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'),
+    );
+    const stylesMainUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'),
+    );
     // const cssUri = webview.asWebviewUri(
     //   vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled/swiper.css'),
     // );
-    //
+
     // // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
@@ -160,15 +152,18 @@ export class Panel {
         -->
         <meta http-equiv="Content-Security-Policy" img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="" rel="stylesheet">
-				<link href="" rel="stylesheet">
+				<link href="${stylesResetUri}" rel="stylesheet">
+				<link href="${stylesMainUri}" rel="stylesheet">
         <link href="" rel="stylesheet">
         <script nonce="${nonce}">
         </script>
 			</head>
       <body>
       <h1>Github PR Finder</h1>
+      <input type="text">
+      <button id="button">Find repos</button>
 			</body>
+			<script src="${scriptUri}"></script>
 			</html>`;
   }
 }
