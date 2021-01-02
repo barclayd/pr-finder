@@ -38,7 +38,7 @@ export default fs
           sourceMap: !production,
           inlineSources: !production,
         }),
-        css({ output: 'bundle.css' }),
+        css({ output: name + '.css' }),
       ],
     };
   });
