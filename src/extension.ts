@@ -32,8 +32,10 @@ export function activate({
   subscriptions.push(
     vscode.commands.registerCommand('pr-finder.refresh', () => {
       // The code you place here will be executed every time your command is executed
-      Panel.kill();
-      Panel.createOrShow(extensionUri);
+      // Panel.kill();
+      // Panel.createOrShow(extensionUri);
+      vscode.commands.executeCommand('workbench.action.closeSidebar');
+      vscode.commands.executeCommand('workbench.view.extension.pr-finder-sidebar-view');
       setTimeout(() => {
         vscode.commands.executeCommand(
           'workbench.action.webview.openDeveloperTools',
