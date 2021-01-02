@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { Panel } from './Panel';
-import { SidebarProvider } from './SidebarProvider';
+import { Sidebar } from './Sidebar';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -12,7 +12,7 @@ export function activate({
 }: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
 
-  const sidebarProvider = new SidebarProvider(extensionUri);
+  const sidebarProvider = new Sidebar(extensionUri);
   subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       'pr-finder-sidebar',

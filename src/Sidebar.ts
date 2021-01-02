@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { getNonce } from './scriptLimiter';
 
-export class SidebarProvider implements vscode.WebviewViewProvider {
+export class Sidebar implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
 
@@ -73,6 +73,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
         <link href="${styleMainUri}" rel="stylesheet">
+        <script nonce="${nonce}">
+        			const tsVscode = acquireVsCodeApi();
+        </script>
 			</head>
       <body>
       <div id="root"></div>

@@ -10,13 +10,13 @@ export const Sidebar = () => {
       <div>{input}</div>
       <button onClick={() => setInput('')}>Reset</button>
       <button onClick={() => {
-        tsvscode.postMessage({
+        tsVscode.postMessage({
           type: 'onInfo',
           value: 'info message',
         });
       }}>Info</button>
       <button onClick={() => {
-        tsvscode.postMessage({
+        tsVscode.postMessage({
           type: 'onError',
           value: 'info message',
         });
