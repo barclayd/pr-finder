@@ -1,3 +1,3 @@
-import React from 'react';
+import './helloworld.css';
 
 export const HelloWorld = () => <h1>Hello, World from React</h1>;
