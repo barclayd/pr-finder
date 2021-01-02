@@ -13,7 +13,8 @@
     "onView:pr-finder-sidebar",
     "onCommand:pr-finder.helloWorld",
     "onCommand:pr-finder.askQuestion",
-    "onCommand:pr-finder.refresh"
+    "onCommand:pr-finder.refresh",
+    "onCommand:pr-finder.addRepo"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -51,6 +52,11 @@
         "command": "pr-finder.refresh",
         "category": "PRFinder",
         "title": "Refresh"
+      },
+      {
+        "command": "pr-finder.addRepo",
+        "category": "PRFinder",
+        "title": "Add Repo"
       }
     ]
   },

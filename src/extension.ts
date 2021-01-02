@@ -12,12 +12,9 @@ export function activate({
 }: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
 
-  const sidebarProvider = new Sidebar(extensionUri);
+  const sidebar = new Sidebar(extensionUri);
   subscriptions.push(
-    vscode.window.registerWebviewViewProvider(
-      'pr-finder-sidebar',
-      sidebarProvider,
-    ),
+    vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),
   );
 
   // The command has been defined in the package.json file
@@ -30,12 +27,33 @@ export function activate({
     }),
   );
   subscriptions.push(
+    vscode.commands.registerCommand('pr-finder.addRepo', () => {
+      // The code you place here will be executed every time your command is executed
+      console.log('setup add repo');
+      const { activeTextEditor } = vscode.window;
+      if (!activeTextEditor) {
+        vscode.window.showInformationMessage('No active text editor');
+        return;
+      }
+      const text = activeTextEditor.document.getText(
+        activeTextEditor.selection,
+      );
+
+      sidebar._view?.webview.postMessage({
+        type: 'add-repo',
+        value: text,
+      });
+    }),
+  );
+  subscriptions.push(
     vscode.commands.registerCommand('pr-finder.refresh', () => {
       // The code you place here will be executed every time your command is executed
       // Panel.kill();
       // Panel.createOrShow(extensionUri);
       vscode.commands.executeCommand('workbench.action.closeSidebar');
-      vscode.commands.executeCommand('workbench.view.extension.pr-finder-sidebar-view');
+      vscode.commands.executeCommand(
+        'workbench.view.extension.pr-finder-sidebar-view',
+      );
       setTimeout(() => {
         vscode.commands.executeCommand(
           'workbench.action.webview.openDeveloperTools',
