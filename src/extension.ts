@@ -17,6 +17,13 @@ export function activate({
     vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),
   );
 
+  const statusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Left,
+  );
+  statusBarItem.text = '$(repo-push) Add repo';
+  statusBarItem.command = 'pr-finder.addRepo';
+  statusBarItem.show();
+
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
