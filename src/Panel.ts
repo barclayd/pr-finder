@@ -125,7 +125,7 @@ export class Panel {
   private _getHtmlForWebview(webview: vscode.Webview) {
     // // // And the uri we use to load this script in the webview
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'),
+      vscode.Uri.joinPath(this._extensionUri, 'out/compiled', 'HelloWorld.js'),
     );
 
     // Uri to load styles into webview
@@ -159,9 +159,7 @@ export class Panel {
         </script>
 			</head>
       <body>
-      <h1>Github PR Finder</h1>
-      <input type="text">
-      <button id="button">Find repos</button>
+      <div id="root"></div>
 			</body>
 			<script src="${scriptUri}"></script>
 			</html>`;
