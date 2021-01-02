@@ -19,7 +19,7 @@ export default fs
         {
           file: 'out/compiled/' + name + '.js',
           name: 'app',
-          sourcemap: 'true',
+          sourcemap: 'inline',
           format: 'iife',
         },
       ],
@@ -27,10 +27,10 @@ export default fs
         peerDepsExternal(),
         resolve({
           browser: true,
-          dedupe: ['react'],
+          dedupe: ['react', 'react-dom'],
         }),
         replace({
-          'process.env.NODE_ENV': JSON.stringify('production'),
+          'process.env.NODE_ENV': JSON.stringify('development'),
         }),
         commonjs(),
         typescript({
