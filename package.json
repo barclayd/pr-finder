@@ -10,12 +10,34 @@
     "Other"
   ],
   "activationEvents": [
+    "onView:pr-finder-sidebar",
     "onCommand:pr-finder.helloWorld",
     "onCommand:pr-finder.askQuestion",
-    "onCommand:pr-finder.refresh"
+    "onCommand:pr-finder.refresh",
+    "onCommand:pr-finder.addRepo"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "pr-finder-sidebar-view",
+          "title": "PR Finder",
+          "icon": "media/file-code.svg"
+        }
+      ]
+    },
+    "views": {
+      "pr-finder-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "pr-finder-sidebar",
+          "name": "PR Finder",
+          "icon": "media/file-code.svg",
+          "contextualTitle": "PR Finder"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "pr-finder.helloWorld",
@@ -30,6 +52,11 @@
         "command": "pr-finder.refresh",
         "category": "PRFinder",
         "title": "Refresh"
+      },
+      {
+        "command": "pr-finder.addRepo",
+        "category": "PRFinder",
+        "title": "Add Repo"
       }
     ]
   },
