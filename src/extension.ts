@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { Panel } from './Panel';
 import { Sidebar } from './Sidebar';
+import { authenticate } from './authenticate';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -33,6 +34,14 @@ export function activate({
       Panel.createOrShow(extensionUri);
     }),
   );
+
+  subscriptions.push(
+    vscode.commands.registerCommand('pr-finder.authenticate', () => {
+      // The code you place here will be executed every time your command is executed
+      authenticate();
+    }),
+  );
+
   subscriptions.push(
     vscode.commands.registerCommand('pr-finder.addRepo', () => {
       // The code you place here will be executed every time your command is executed

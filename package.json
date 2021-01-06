@@ -14,8 +14,12 @@
     "onCommand:pr-finder.helloWorld",
     "onCommand:pr-finder.askQuestion",
     "onCommand:pr-finder.refresh",
-    "onCommand:pr-finder.addRepo"
+    "onCommand:pr-finder.addRepo",
+    "onCommand:pr-finder.authenticate"
   ],
+  "api": {
+    "production": "https://r997n84ck8.execute-api.eu-west-2.amazonaws.com/production"
+  },
   "main": "./dist/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -57,6 +61,11 @@
         "command": "pr-finder.addRepo",
         "category": "PRFinder",
         "title": "Add Repo"
+      },
+      {
+        "command": "pr-finder.authenticate",
+        "category": "PRFinder",
+        "title": "Authenticate"
       }
     ]
   },

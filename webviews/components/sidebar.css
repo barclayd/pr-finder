@@ -6,3 +6,7 @@ h1 {
 input, div {
   color: #dcffe4 !important;
 }
+
+button {
+  color: #bef5cb;
+}
