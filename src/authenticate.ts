@@ -1,20 +1,46 @@
 import * as vscode from 'vscode';
 import * as polka from 'polka';
 import { api } from '../package.json';
+import { AuthService } from './servies/AuthService';
+import { ServerResponse } from 'http';
+import { GithubUser } from './types';
 
 const PORT = 54321;
 
-export const authenticate = () => {
+const parseUserData = <T>(data: string): T | undefined => {
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    console.log(`Unable to parse data from redirect`);
+    return;
+  }
+};
+
+const onError = (res: ServerResponse) => {
+  res.end('<h1>Something went wrong</h1>');
+};
+
+export const authenticate = (authService: AuthService) => {
   const app = polka();
-  app.get('/auth/:userData', (req, res) => {
+  app.get('/auth/:userData', async (req, res) => {
     const userData: string | undefined = req.params.userData;
     if (!userData) {
-      res.end('<h1>Something went wrong</h1>');
+      onError(res);
+      return;
     }
     const uriDecodedUserData = decodeURIComponent(userData);
-    const data = Buffer.from(uriDecodedUserData, 'base64').toString('utf-8');
-    console.log(data);
+    const dataString = Buffer.from(uriDecodedUserData, 'base64').toString(
+      'utf-8',
+    );
+    const githubData = parseUserData<GithubUser>(dataString);
+    if (!githubData) {
+      onError(res);
+      return;
+    }
+    await authService.setToken(githubData.accessToken);
     res.end('<h1>Successfully authenticated. You can close this now</h1>');
+    console.log('token ' + authService.getToken());
+    app.server?.close();
   });
   app.listen(PORT, (error: Error | undefined) => {
     if (error) {
