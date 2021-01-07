@@ -2,7 +2,7 @@ overwrite: true
 schema:
   - https://api.github.com/graphql:
       headers:
-        Authorization: "bearer 048237bcc4dcd2bbc5320f1f97f361c04f75ae14"
+        Authorization: "bearer AUTH TOKEN"
 documents: "webviews/graphql/**/*.graphql"
 generates:
   webviews/generated/graphql.ts:
