@@ -1,4 +1,1 @@
-export interface vsCodeData {
-  type: string;
-  value: string;
-}
+import { Message } from '../globals/types';
