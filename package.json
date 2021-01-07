@@ -14,8 +14,12 @@
     "onCommand:pr-finder.helloWorld",
     "onCommand:pr-finder.askQuestion",
     "onCommand:pr-finder.refresh",
-    "onCommand:pr-finder.addRepo"
+    "onCommand:pr-finder.addRepo",
+    "onCommand:pr-finder.authenticate"
   ],
+  "api": {
+    "production": "https://r997n84ck8.execute-api.eu-west-2.amazonaws.com/production"
+  },
   "main": "./dist/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -57,6 +61,11 @@
         "command": "pr-finder.addRepo",
         "category": "PRFinder",
         "title": "Add Repo"
+      },
+      {
+        "command": "pr-finder.authenticate",
+        "category": "PRFinder",
+        "title": "Authenticate"
       }
     ]
   },
@@ -82,6 +91,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.4",
     "@types/node": "^12.11.7",
+    "@types/polka": "^0.5.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/vscode": "^1.52.0",
@@ -91,6 +101,7 @@
     "eslint": "^7.15.0",
     "glob": "^7.1.6",
     "mocha": "^8.1.3",
+    "polka": "^0.5.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "rollup-plugin-css-only": "^3.1.0",
@@ -100,5 +111,6 @@
     "vscode-test": "^1.4.1",
     "webpack": "^5.10.0",
     "webpack-cli": "^4.2.0"
-  }
+  },
+  "dependencies": {}
 }

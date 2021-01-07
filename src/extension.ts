@@ -3,15 +3,19 @@
 import * as vscode from 'vscode';
 import { Panel } from './Panel';
 import { Sidebar } from './Sidebar';
+import { authenticate } from './authenticate';
+import {AuthService} from "./servies/AuthService";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate({
   extensionUri,
   subscriptions,
+  globalState,
 }: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
-
+  const authService = new AuthService(globalState);
+  console.log(`token success: ${authService.getToken()}`);
   const sidebar = new Sidebar(extensionUri);
   subscriptions.push(
     vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),
@@ -33,6 +37,14 @@ export function activate({
       Panel.createOrShow(extensionUri);
     }),
   );
+
+  subscriptions.push(
+    vscode.commands.registerCommand('pr-finder.authenticate', () => {
+      // The code you place here will be executed every time your command is executed
+      authenticate(authService);
+    }),
+  );
+
   subscriptions.push(
     vscode.commands.registerCommand('pr-finder.addRepo', () => {
       // The code you place here will be executed every time your command is executed

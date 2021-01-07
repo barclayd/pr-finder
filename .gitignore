@@ -108,3 +108,5 @@ dist
 
 # compiled js
 out
+
+.DS_Store
