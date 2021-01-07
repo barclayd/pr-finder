@@ -1,0 +1,20 @@
+query UserRepo($startCursor: String) {
+  viewer {
+    repositories(first:100, after: $startCursor) {
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+      nodes {
+        name
+        description
+        url
+        updatedAt
+      }
+      pageInfo {
+        endCursor
+      }
+      totalCount
+    }
+  }
+}
