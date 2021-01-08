@@ -1,0 +1,47 @@
+.content-table {
+  border-collapse: collapse;
+  margin: 10px 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+.content-table thead tr {
+  background-color: var(--vscode-icon-foreground);
+  color: var(--vscode-checkbox-background);
+  text-align: left;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.content-table thead tr th:first-child {
+  border-right: 2px solid #000000;
+}
+
+.content-table th,
+.content-table td:first-child {
+  padding: 5px 15px;
+}
+
+.content-table td {
+  cursor: pointer;
+}
+
+.content-table th:first-child,
+.content-table tbody tr td:first-child {
+  width: 80%;
+}
+
+.content-table tbody tr td:last-child {
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.content-table tbody tr {
+  color: var(--vscode-icon-foreground);
+}
+
+.content-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid #dddddd;
+}
