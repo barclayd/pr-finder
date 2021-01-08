@@ -5,6 +5,8 @@ import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
 import { GraphQLService } from '../services/GraphQLService';
 import { useCombobox } from 'downshift';
+import { Table } from './Table';
+import { VSCodeService } from '../services/VSCodeService';
 
 interface Repo {
   name: string;
@@ -135,14 +137,25 @@ export const Sidebar = () => {
       }
     });
 
-    tsVscode.postMessage({
-      type: Message.getToken,
-      value: '',
-    });
+    VSCodeService.sendMessage(Message.getToken);
   }, []);
 
   const findRepoByName = (name: string): Repo | undefined => {
     return repos.find((repo) => repo.name === name);
+  };
+
+  const onTrackedRepoClick = (clickedRepo: Repo) => {
+    setTrackedRepos(trackedRepos.filter((repo) => repo !== clickedRepo));
+  };
+
+  const onRecordClick = ({ name }: { name: string; track: JSX.Element }) => {
+    const repo = repos.find(
+      (repo) => repo.name.toLowerCase() === name.toLowerCase(),
+    );
+    if (!repo) {
+      return;
+    }
+    VSCodeService.sendMessage(Message.openBrowser, `${repo.url}/pulls`);
   };
 
   return (
@@ -152,17 +165,14 @@ export const Sidebar = () => {
       {repos.length > 0 && (
         <div>
           <label {...getLabelProps()}>Select a repo to track</label>
-          <div
-            style={{ display: 'inline-block', marginLeft: '5px' }}
-            {...getComboboxProps()}
-          >
-            <input {...getInputProps()} />
+          <div className="input-wrapper" {...getComboboxProps()}>
+            <input {...getInputProps()} style={{ width: '80%' }} />
             <button
               type="button"
               {...getToggleButtonProps()}
               aria-label="toggle menu"
               style={{
-                width: '25%',
+                width: '20%',
               }}
             >
               &#8595;
@@ -196,12 +206,24 @@ export const Sidebar = () => {
                 </li>
               ))}
           </ul>
-          {trackedRepos.length > 0 && <h3>Tracked repos</h3>}
-          <ul>
-            {trackedRepos.map((repo) => (
-              <li key={repo.name}>{repo.name}</li>
-            ))}
-          </ul>
+          {trackedRepos.length > 0 && (
+            <>
+              <h3>Tracked repos</h3>
+              <Table
+                records={trackedRepos.map((repo) => ({
+                  name: repo.name,
+                  track: (
+                    <input
+                      type="checkbox"
+                      defaultChecked
+                      onChange={() => onTrackedRepoClick(repo)}
+                    />
+                  ),
+                }))}
+                onRecordClick={onRecordClick}
+              />
+            </>
+          )}
         </div>
       )}
     </>
