@@ -8,14 +8,20 @@ h1 {
   margin-top: 10px;
 }
 
-.input-wrapper > *:first-child {
-  margin-right: 5px;
-}
-
-.input-wrapper > *:last-child {
-  margin-left: 5px;
-}
-
 h3 {
   margin: 20px 0 10px 0;
+}
+
+.fa-trash-alt {
+  color: #b33a3a;
+  height: 16px;
+  width: 30px;
+}
+
+.fa-search {
+  width: 12px;
+}
+
+.search-button {
+  background-color: var(--vscode-input-background);
 }
