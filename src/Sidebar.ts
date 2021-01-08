@@ -33,6 +33,16 @@ export class Sidebar implements vscode.WebviewViewProvider {
           });
           break;
         }
+        case Message.openBrowser: {
+          if (!data.value) {
+            return;
+          }
+          vscode.commands.executeCommand(
+            'vscode.open',
+            vscode.Uri.parse(data.value),
+          );
+          break;
+        }
         case Message.onInfo: {
           if (!data.value) {
             return;

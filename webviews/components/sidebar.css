@@ -2,3 +2,20 @@ h1 {
   color: #28a745;
   margin: 20px 0;
 }
+
+.input-wrapper {
+  display: flex;
+  margin-top: 10px;
+}
+
+.input-wrapper > *:first-child {
+  margin-right: 5px;
+}
+
+.input-wrapper > *:last-child {
+  margin-left: 5px;
+}
+
+h3 {
+  margin: 20px 0 10px 0;
+}
