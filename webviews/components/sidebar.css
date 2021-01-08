@@ -25,3 +25,7 @@ h3 {
 .search-button {
   background-color: var(--vscode-input-background);
 }
+
+.dropdown-list-item {
+  cursor: pointer;
+}

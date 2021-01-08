@@ -238,6 +238,7 @@ export const Sidebar = () => {
             {isOpen &&
               filteredItems.map((item, index) => (
                 <li
+                  className="dropdown-list-item"
                   style={
                     highlightedIndex === index
                       ? { backgroundColor: '#bde4ff' }
