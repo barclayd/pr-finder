@@ -3,10 +3,29 @@ h1 {
   margin: 20px 0;
 }
 
-input, div {
-  color: #dcffe4 !important;
+.input-wrapper {
+  display: flex;
+  margin-top: 10px;
 }
 
-button {
-  color: #bef5cb;
+h3 {
+  margin: 20px 0 10px 0;
+}
+
+.fa-trash-alt {
+  color: #b33a3a;
+  height: 16px;
+  width: 30px;
+}
+
+.fa-search {
+  width: 12px;
+}
+
+.search-button {
+  background-color: var(--vscode-input-background);
+}
+
+.dropdown-list-item {
+  cursor: pointer;
 }

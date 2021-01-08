@@ -4,7 +4,8 @@ import * as vscode from 'vscode';
 import { Panel } from './Panel';
 import { Sidebar } from './Sidebar';
 import { authenticate } from './authenticate';
-import {AuthService} from "./servies/AuthService";
+import { AuthService } from './services/AuthService';
+import { Message } from '../globals/types';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,7 +17,7 @@ export function activate({
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   const authService = new AuthService(globalState);
   console.log(`token success: ${authService.getToken()}`);
-  const sidebar = new Sidebar(extensionUri);
+  const sidebar = new Sidebar(extensionUri, authService);
   subscriptions.push(
     vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),
   );
@@ -59,7 +60,7 @@ export function activate({
       );
 
       sidebar._view?.webview.postMessage({
-        type: 'add-repo',
+        type: Message.addRepo,
         value: text,
       });
     }),

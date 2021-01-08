@@ -79,10 +79,15 @@
     "pretest": "npm run test-compile && npm run lint",
     "lint": "eslint '*/**/*.{js,ts}' --fix",
     "prettier": "prettier --loglevel warn --write '**/*.{js,json,md,ts}'",
+    "generate:api:types": "graphql-codegen --config codegen.yml",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
+    "@graphql-codegen/cli": "^1.20.0",
+    "@graphql-codegen/typescript": "^1.20.0",
+    "@graphql-codegen/typescript-graphql-request": "^3.0.0",
+    "@graphql-codegen/typescript-operations": "^1.17.13",
     "@rollup/plugin-babel": "^5.2.2",
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.1",
@@ -112,5 +117,10 @@
     "webpack": "^5.10.0",
     "webpack-cli": "^4.2.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "downshift": "^6.0.11",
+    "graphql": "^15.4.0",
+    "graphql-request": "^3.4.0",
+    "react-query": "^3.5.11"
+  }
 }

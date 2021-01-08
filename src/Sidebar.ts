@@ -1,11 +1,16 @@
 import * as vscode from 'vscode';
 import { getNonce } from './scriptLimiter';
+import { Message, vsCodeData } from '../globals/types';
+import { AuthService } from './services/AuthService';
 
 export class Sidebar implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
   _doc?: vscode.TextDocument;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(
+    private readonly _extensionUri: vscode.Uri,
+    private authService: AuthService,
+  ) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;
@@ -19,16 +24,33 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    webviewView.webview.onDidReceiveMessage(async (data) => {
+    webviewView.webview.onDidReceiveMessage(async (data: vsCodeData) => {
       switch (data.type) {
-        case 'onInfo': {
+        case Message.getToken: {
+          webviewView.webview.postMessage({
+            type: Message.getToken,
+            value: this.authService.getToken(),
+          });
+          break;
+        }
+        case Message.openBrowser: {
+          if (!data.value) {
+            return;
+          }
+          vscode.commands.executeCommand(
+            'vscode.open',
+            vscode.Uri.parse(data.value),
+          );
+          break;
+        }
+        case Message.onInfo: {
           if (!data.value) {
             return;
           }
           vscode.window.showInformationMessage(data.value);
           break;
         }
-        case 'onError': {
+        case Message.onError: {
           if (!data.value) {
             return;
           }

@@ -1,4 +1,4 @@
-import { vsCodeData } from './types';
+import { vsCodeData } from '../globals/types';
 
 declare global {
   const tsVscode: {

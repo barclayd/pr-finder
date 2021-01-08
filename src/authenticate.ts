@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as polka from 'polka';
 import { api } from '../package.json';
-import { AuthService } from './servies/AuthService';
+import { AuthService } from './services/AuthService';
 import { ServerResponse } from 'http';
 import { GithubUser } from './types';
 
