@@ -14,7 +14,7 @@
   text-transform: capitalize;
 }
 
-.content-table thead tr th:first-child {
+.content-table thead tr th:not(:last-child) {
   border-right: 2px solid #000000;
 }
 
@@ -42,6 +42,9 @@
   padding: 10px 0;
   display: flex;
   justify-content: center;
+}
+.content-table tbody.checkbox tr td:last-child {
+  margin: 50% auto;
 }
 
 .content-table tbody tr {
