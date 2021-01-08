@@ -1,9 +1,23 @@
 img {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
 }
 
 .pr-author {
   cursor: pointer;
+}
+
+.title-wrapper {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-gap: 5px;
+  align-items: center;
+}
+
+.title-wrapper > *:first-child {
+  margin-right: 5px;
+}
+.title-wrapper > *:last-child {
+  margin-left: 5px;
 }

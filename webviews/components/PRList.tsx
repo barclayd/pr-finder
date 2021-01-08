@@ -5,6 +5,7 @@ import { GraphQLService } from '../services/GraphQLService';
 import './PRList.css';
 import { VSCodeService } from '../services/VSCodeService';
 import { Message } from '../../globals/types';
+import { Table } from './Table';
 
 interface PRListProps {
   accessToken: string | undefined;
@@ -12,11 +13,22 @@ interface PRListProps {
   username: string;
 }
 
-const goToAuthorProfile = (authorUrl: string) => {
-  VSCodeService.sendMessage(Message.openBrowser, authorUrl);
+const goToPage = (url: string) => {
+  VSCodeService.sendMessage(Message.openBrowser, url);
 };
 
-export const PRList: FC<PRListProps> = ({ accessToken, repoName, username }) => {
+const formatPRTitle = (title: string) => {
+  if (title.length <= 46) {
+    return title;
+  }
+  return `${title.substring(0, 43)}...`;
+};
+
+export const PRList: FC<PRListProps> = ({
+  accessToken,
+  repoName,
+  username,
+}) => {
   const fallback = <></>;
   const client = accessToken
     ? new GraphQLService(accessToken).client
@@ -25,12 +37,15 @@ export const PRList: FC<PRListProps> = ({ accessToken, repoName, username }) => 
     return fallback;
   }
   const sdk = getSdk(client);
-  const data = useQuery(['pr', repoName], async () => await sdk.PR({ repo: repoName }));
+  const data = useQuery(
+    ['pr', repoName],
+    async () => await sdk.PR({ repo: repoName }),
+  );
   const pullRequests = data.data?.viewer.repository?.pullRequests;
   if (!pullRequests) {
     return fallback;
   }
-  const { nodes, totalCount } = pullRequests;
+  const { nodes } = pullRequests;
   if (!nodes) {
     return fallback;
   }
@@ -39,29 +54,54 @@ export const PRList: FC<PRListProps> = ({ accessToken, repoName, username }) => 
       node?.author?.login !== username &&
       node?.reviews?.nodes?.map((review) => review?.author?.login !== username),
   );
+  const totalCount = pullRequestsWaitingReview.length;
+  if (totalCount === 0) {
+    return <></>;
+  }
   return (
-    <>
-      <div>PRs waiting review: {totalCount}</div>
-      {pullRequestsWaitingReview.map((node, index) => {
-        if (!node) {
-          return fallback;
-        }
-        return (
-          <div key={repoName + node.title + index}>
-            <div>{node.title}</div>
-            <div>{repoName}</div>
-            {node.author && (
-              <div className="pr-author" onClick={() => goToAuthorProfile(node.author!.url)}>
-                {node.author.avatarUrl ? (
-                  <img src={node.author.avatarUrl} alt={node.author.login} />
-                ) : (
-                  <div>{node.author.login}</div>
-                )}
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </>
+    <Table
+      records={pullRequestsWaitingReview
+        .filter((pr) => pr !== null && pr !== undefined)
+        .map((pr) => ({
+          title: (
+            <div className="title-wrapper">
+              <div>{formatPRTitle(pr!.title)}</div>
+              {pr!.author?.avatarUrl ? (
+                <img src={pr!.author.avatarUrl} alt={pr!.author.login} />
+              ) : (
+                <div>{pr!.author?.login}</div>
+              )}
+            </div>
+          ),
+          track: (
+            <div>
+              <input type="checkbox" />
+            </div>
+          ),
+        }))}
+      onRecordClick={() => console.log('clicked')}
+      tableName={repoName + ` (${totalCount})`}
+      checkbox
+    />
   );
 };
+
+// {/*{pullRequestsWaitingReview.map((node, index) => {*/}
+// {/*  if (!node) {*/}
+// {/*    return fallback;*/}
+// {/*  }*/}
+// {/*  return (*/}
+// {/*    <div key={repoName + node.title + index}>*/}
+// {/*<div onClick={() => goToPage(node.url)}>{node.title}</div>*/}
+// {/*{node.author && (*/}
+// {/*  <div className="pr-author" onClick={() => goToPage(node.author!.url)}>*/}
+// {/*    {node.author.avatarUrl ? (*/}
+// {/*      <img src={node.author.avatarUrl} alt={node.author.login} />*/}
+// {/*    ) : (*/}
+// {/*      <div>{node.author.login}</div>*/}
+// {/*    )}*/}
+// {/*  </div>*/}
+// {/*)}*/}
+// {/*    </div>*/}
+// {/*  );*/}
+// {/*})}*/}
