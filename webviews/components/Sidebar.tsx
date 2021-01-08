@@ -7,6 +7,7 @@ import { GraphQLService } from '../services/GraphQLService';
 import { useCombobox } from 'downshift';
 import { Table } from './Table';
 import { VSCodeService } from '../services/VSCodeService';
+import { PRList } from './PRList';
 
 interface Repo {
   name: string;
@@ -17,7 +18,7 @@ interface Repo {
 
 export const Sidebar = () => {
   const [repos, setRepos] = useState<Repo[]>([]);
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
   const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
   const [filteredItems, setFilteredItems] = useState<string[]>([]);
   const {
@@ -99,7 +100,6 @@ export const Sidebar = () => {
     },
   });
 
-  let accessToken: string | undefined;
   let client: GraphQLClient | undefined;
 
   const fetchUserRepos = async () => {
@@ -153,9 +153,8 @@ export const Sidebar = () => {
           console.log(message);
           break;
         case Message.getToken:
-          accessToken = message.value;
-          setAuthenticated(true);
-          client = new GraphQLService(accessToken).client;
+          setAccessToken(message.value);
+          client = new GraphQLService(message.value).client;
           (async () => {
             await fetchUserRepos();
           })();
@@ -186,10 +185,21 @@ export const Sidebar = () => {
   return (
     <>
       <h1>PR Finder</h1>
-      {!isAuthenticated && <button>Login</button>}
+      {!accessToken && <button>Login</button>}
+      {trackedRepos.length > 0 && (
+        <>
+          {trackedRepos.map((repo) => (
+            <PRList
+              accessToken={accessToken}
+              repoName={repo.name}
+              username="barclayd"
+            />
+          ))}
+        </>
+      )}
       {repos.length > 0 && (
         <div>
-          <label {...getLabelProps()}>Select a repo to track</label>
+          <label {...getLabelProps()}>Find a repo to track</label>
           <div className="input-wrapper" {...getComboboxProps()}>
             <button
               type="button"
