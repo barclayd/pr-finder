@@ -15,6 +15,8 @@ interface Repo {
 
 export const Sidebar = () => {
   const [repos, setRepos] = useState<Repo[]>([]);
+  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
   const [filteredItems, setFilteredItems] = useState<string[]>([]);
   const {
     isOpen,
@@ -24,6 +26,7 @@ export const Sidebar = () => {
     getInputProps,
     getComboboxProps,
     highlightedIndex,
+    setInputValue,
     getItemProps,
   } = useCombobox({
     items: filteredItems,
@@ -33,11 +36,39 @@ export const Sidebar = () => {
       }
       setFilteredItems(
         repos
-          .filter((repo) =>
-            repo.name.toLowerCase().includes(inputValue?.toLowerCase()),
-          )
+          .filter((repo) => {
+            if (
+              trackedRepos
+                .map((trackedRepo) => trackedRepo.name.toLowerCase())
+                .includes(repo.name.toLowerCase())
+            ) {
+              return false;
+            }
+            if (
+              repo.name.toLowerCase().includes(inputValue?.toLowerCase()) ||
+              repo.name
+                .replace('-', ' ')
+                .toLowerCase()
+                .includes(inputValue?.toLowerCase())
+            ) {
+              return true;
+            }
+          })
           .map((repo) => repo.name),
       );
+    },
+    onSelectedItemChange: ({ selectedItem }) => {
+      if (!selectedItem) {
+        return;
+      }
+      const repo = findRepoByName(selectedItem);
+      if (!repo) {
+        return;
+      }
+      setInputValue('');
+      if (!trackedRepos.includes(repo)) {
+        setTrackedRepos([...trackedRepos, repo]);
+      }
     },
   });
 
@@ -81,7 +112,7 @@ export const Sidebar = () => {
       (a, b) => a.updatedAt.getTime() - b.updatedAt.getTime(),
     );
     setRepos(
-      userRepos.sort((a, b) => a.updatedAt.getTime() - b.updatedAt.getTime()),
+      userRepos.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()),
     );
     setFilteredItems(reposSortedByTime.map((repo) => repo.name));
     console.log(userRepos);
@@ -96,6 +127,7 @@ export const Sidebar = () => {
           break;
         case Message.getToken:
           accessToken = message.value;
+          setAuthenticated(true);
           client = new GraphQLService(accessToken).client;
           (async () => {
             await fetchUserRepos();
@@ -109,53 +141,69 @@ export const Sidebar = () => {
     });
   }, []);
 
+  const findRepoByName = (name: string): Repo | undefined => {
+    return repos.find((repo) => repo.name === name);
+  };
+
   return (
     <>
       <h1>PR Finder</h1>
-      <button>Login</button>
-      <label {...getLabelProps()}>Choose an element:</label>
-      <div
-        style={{ display: 'inline-block', marginLeft: '5px' }}
-        {...getComboboxProps()}
-      >
-        <input {...getInputProps()} />
-        <button
-          type="button"
-          {...getToggleButtonProps()}
-          aria-label="toggle menu"
-          style={{
-            width: '25%',
-          }}
-        >
-          &#8595;
-        </button>
-      </div>
-      <ul
-        {...getMenuProps()}
-        style={{
-          maxHeight: 80,
-          maxWidth: 300,
-          overflowY: 'scroll',
-          backgroundColor: 'var(--vscode-button-secondaryBackground)',
-          color: 'var(--vscode-button-secondaryForeground)',
-          padding: 0,
-          listStyle: 'none',
-          position: 'relative',
-        }}
-      >
-        {isOpen &&
-          filteredItems.map((item, index) => (
-            <li
-              style={
-                highlightedIndex === index ? { backgroundColor: '#bde4ff' } : {}
-              }
-              key={`${item}${index}`}
-              {...getItemProps({ item, index })}
+      {!isAuthenticated && <button>Login</button>}
+      {repos.length > 0 && (
+        <div>
+          <label {...getLabelProps()}>Select a repo to track</label>
+          <div
+            style={{ display: 'inline-block', marginLeft: '5px' }}
+            {...getComboboxProps()}
+          >
+            <input {...getInputProps()} />
+            <button
+              type="button"
+              {...getToggleButtonProps()}
+              aria-label="toggle menu"
+              style={{
+                width: '25%',
+              }}
             >
-              {item}
-            </li>
-          ))}
-      </ul>
+              &#8595;
+            </button>
+          </div>
+          <ul
+            {...getMenuProps()}
+            style={{
+              maxHeight: 80,
+              maxWidth: 300,
+              overflowY: 'scroll',
+              backgroundColor: 'var(--vscode-button-secondaryBackground)',
+              color: 'var(--vscode-button-secondaryForeground)',
+              padding: 0,
+              listStyle: 'none',
+              position: 'relative',
+            }}
+          >
+            {isOpen &&
+              filteredItems.map((item, index) => (
+                <li
+                  style={
+                    highlightedIndex === index
+                      ? { backgroundColor: '#bde4ff' }
+                      : {}
+                  }
+                  key={`${item}${index}`}
+                  {...getItemProps({ item, index })}
+                >
+                  {item}
+                </li>
+              ))}
+          </ul>
+          {trackedRepos.length > 0 && <h3>Tracked repos</h3>}
+          <ul>
+            {trackedRepos.map((repo) => (
+              <li key={repo.name}>{repo.name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   );
 };
