@@ -38,12 +38,18 @@
   width: 85%;
 }
 
+.content-table.single-column th:first-child,
+.content-table.single-column tbody tr td:first-child {
+  width: 100%;
+}
+
 .content-table tbody tr td:last-child {
   padding: 10px 0;
   display: flex;
   justify-content: center;
 }
-.content-table tbody.checkbox tr td:last-child {
+
+.content-table.multi-column tbody.checkbox tr td:last-child {
   margin: 50% auto;
 }
 
@@ -53,4 +59,9 @@
 
 .content-table tbody tr:not(:last-child) {
   border-bottom: 1px solid #dddddd;
+}
+
+.fa-caret-right {
+  width: 6px;
+  margin-right: 3px;
 }
