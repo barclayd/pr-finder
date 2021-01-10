@@ -38,6 +38,10 @@
   width: 85%;
 }
 
+.content-table tbody tr td:first-child:hover {
+  text-decoration: underline;
+}
+
 .content-table.single-column th:first-child,
 .content-table.single-column tbody tr td:first-child {
   width: 100%;

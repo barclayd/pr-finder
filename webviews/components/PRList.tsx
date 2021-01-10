@@ -65,17 +65,12 @@ export const PRList: FC<PRListProps> = ({
         .map((pr) => ({
           title: (
             <div className="title-wrapper">
-              <div>{formatPRTitle(pr!.title)}</div>
+              <div className="pr-title" onClick={() => goToPage(pr!.url)}>{formatPRTitle(pr!.title)}</div>
               {pr!.author?.avatarUrl ? (
-                <img src={pr!.author.avatarUrl} alt={pr!.author.login} />
+                <img src={pr!.author.avatarUrl} alt={pr!.author.login} onClick={() => goToPage(pr!.author!.url)} />
               ) : (
-                <div>{pr!.author?.login}</div>
+                <div>{pr!.author?.login} onClick={() => goToPage(pr!.author!.url)}</div>
               )}
-            </div>
-          ),
-          track: (
-            <div>
-              <input type="checkbox" />
             </div>
           ),
         }))}
@@ -85,23 +80,3 @@ export const PRList: FC<PRListProps> = ({
     />
   );
 };
-
-// {/*{pullRequestsWaitingReview.map((node, index) => {*/}
-// {/*  if (!node) {*/}
-// {/*    return fallback;*/}
-// {/*  }*/}
-// {/*  return (*/}
-// {/*    <div key={repoName + node.title + index}>*/}
-// {/*<div onClick={() => goToPage(node.url)}>{node.title}</div>*/}
-// {/*{node.author && (*/}
-// {/*  <div className="pr-author" onClick={() => goToPage(node.author!.url)}>*/}
-// {/*    {node.author.avatarUrl ? (*/}
-// {/*      <img src={node.author.avatarUrl} alt={node.author.login} />*/}
-// {/*    ) : (*/}
-// {/*      <div>{node.author.login}</div>*/}
-// {/*    )}*/}
-// {/*  </div>*/}
-// {/*)}*/}
-// {/*    </div>*/}
-// {/*  );*/}
-// {/*})}*/}
