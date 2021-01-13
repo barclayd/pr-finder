@@ -5,19 +5,30 @@ interface TableProps<T> {
   records: T[];
   tableName?: string;
   checkbox?: boolean;
-  onRecordClick: (record: T) => void;
+  isOpen: boolean;
+  onRecordClick?: (record: T) => void;
+  onCaretClick?: () => void;
 }
 
-const Caret: FC = () => (
+interface CaretProps {
+  isOpen: boolean;
+  onCaretClick?: () => void;
+}
+
+const Caret: FC<CaretProps> = ({ isOpen, onCaretClick }) => (
   <svg
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"
     data-icon="caret-right"
-    className="svg-inline--fa fa-caret-right fa-w-6"
+    className={[
+      'svg-inline--fa fa-caret-right fa-w-6',
+      isOpen ? 'open' : 'closed',
+    ].join(' ')}
     role="img"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 192 512"
+    onClick={onCaretClick}
   >
     <path
       fill="currentColor"
@@ -30,38 +41,35 @@ export const Table = <T extends object>({
   records,
   onRecordClick,
   tableName,
+  isOpen = true,
+  onCaretClick,
   checkbox,
 }: TableProps<T>) => {
   const TableHead: FC = () => {
     if (!tableName) {
       return (
-        <>
+        <tr>
           {Object.keys(records[0]).map((column, index) => (
             <th key={column + index}>{column !== 'track' ? column : '✓'}</th>
           ))}
-        </>
+        </tr>
       );
     }
     return (
-      <th>
-        <Caret />
-        {tableName}
-      </th>
+      <tr>
+        <th>
+          <Caret isOpen={isOpen} onCaretClick={onCaretClick} />
+          {tableName}
+        </th>
+      </tr>
     );
   };
 
-  return (
-    <table
-      className={[
-        'content-table',
-        Object.keys(records[0]).length === 1 ? 'single-column' : 'multi-column',
-      ].join(' ')}
-    >
-      <thead>
-        <tr>
-          <TableHead />
-        </tr>
-      </thead>
+  const TableBody: FC = () => {
+    if (!isOpen) {
+      return <></>;
+    }
+    return (
       <tbody className={checkbox ? 'checkbox' : undefined}>
         {records.map((record, index) => (
           <tr key={record.toString() + index}>
@@ -69,7 +77,10 @@ export const Table = <T extends object>({
               <td
                 key={record.toString() + index}
                 onClick={() => {
-                  if (index === Object.values(record).length - 1) {
+                  if (
+                    index === Object.values(record).length - 1 ||
+                    !onRecordClick
+                  ) {
                     return;
                   }
                   onRecordClick(record);
@@ -81,6 +92,20 @@ export const Table = <T extends object>({
           </tr>
         ))}
       </tbody>
+    );
+  };
+
+  return (
+    <table
+      className={[
+        'content-table',
+        Object.keys(records[0]).length === 1 ? 'single-column' : 'multi-column',
+      ].join(' ')}
+    >
+      <thead>
+        <TableHead />
+      </thead>
+      <TableBody />
     </table>
   );
 };
