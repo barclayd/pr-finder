@@ -11,6 +11,8 @@ interface PRListProps {
   accessToken: string | undefined;
   repoName: string;
   username: string;
+  isOpen: boolean;
+  onOpenListClick: () => void;
 }
 
 const goToPage = (url: string) => {
@@ -28,6 +30,8 @@ export const PRList: FC<PRListProps> = ({
   accessToken,
   repoName,
   username,
+  isOpen,
+  onOpenListClick,
 }) => {
   const fallback = <></>;
   const client = accessToken
@@ -65,17 +69,26 @@ export const PRList: FC<PRListProps> = ({
         .map((pr) => ({
           title: (
             <div className="title-wrapper">
-              <div className="pr-title" onClick={() => goToPage(pr!.url)}>{formatPRTitle(pr!.title)}</div>
+              <div className="pr-title" onClick={() => goToPage(pr!.url)}>
+                {formatPRTitle(pr!.title)}
+              </div>
               {pr!.author?.avatarUrl ? (
-                <img src={pr!.author.avatarUrl} alt={pr!.author.login} onClick={() => goToPage(pr!.author!.url)} />
+                <img
+                  src={pr!.author.avatarUrl}
+                  alt={pr!.author.login}
+                  onClick={() => goToPage(pr!.author!.url)}
+                />
               ) : (
-                <div>{pr!.author?.login} onClick={() => goToPage(pr!.author!.url)}</div>
+                <div>
+                  {pr!.author?.login} onClick={() => goToPage(pr!.author!.url)}
+                </div>
               )}
             </div>
           ),
         }))}
-      onRecordClick={() => console.log('clicked')}
+      isOpen={isOpen}
       tableName={repoName + ` (${totalCount})`}
+      onCaretClick={onOpenListClick}
       checkbox
     />
   );

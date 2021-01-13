@@ -18,6 +18,7 @@ interface Repo {
 
 export const Sidebar = () => {
   const [repos, setRepos] = useState<Repo[]>([]);
+  const [openPRList, setOpenPRList] = useState<string | undefined>(undefined);
   const [accessToken, setAccessToken] = useState<string | undefined>(undefined);
   const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
   const [filteredItems, setFilteredItems] = useState<string[]>([]);
@@ -88,6 +89,7 @@ export const Sidebar = () => {
       if (!trackedRepos.includes(repo)) {
         setTrackedRepos([...trackedRepos, repo]);
         closeMenu();
+        setOpenPRList(repo.name);
         setFilteredItems(
           repos
             .filter(
@@ -172,6 +174,12 @@ export const Sidebar = () => {
     setTrackedRepos(trackedRepos.filter((repo) => repo !== clickedRepo));
   };
 
+  const onOpenListClick = (clickedRepoName: string) => {
+    openPRList === clickedRepoName
+      ? setOpenPRList(undefined)
+      : setOpenPRList(clickedRepoName);
+  };
+
   const onRecordClick = ({ name }: { name: string; track: JSX.Element }) => {
     const repo = repos.find(
       (repo) => repo.name.toLowerCase() === name.toLowerCase(),
@@ -190,9 +198,12 @@ export const Sidebar = () => {
         <>
           {trackedRepos.map((repo) => (
             <PRList
+              key={repo.name}
+              isOpen={openPRList === repo.name}
               accessToken={accessToken}
               repoName={repo.name}
               username="barclayd"
+              onOpenListClick={() => onOpenListClick(repo.name)}
             />
           ))}
         </>
@@ -265,6 +276,7 @@ export const Sidebar = () => {
             <>
               <h3>Tracked repos</h3>
               <Table
+                isOpen
                 records={trackedRepos.map((repo) => ({
                   name: repo.name,
                   track: (
