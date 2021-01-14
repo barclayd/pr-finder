@@ -38,10 +38,6 @@
   width: 85%;
 }
 
-.content-table tbody {
-  animation: show-body 750ms ease-in;
-}
-
 .content-table tbody tr td:first-child:hover {
   text-decoration: underline;
 }
@@ -77,11 +73,13 @@
 
 .fa-caret-right.open {
   animation: open 300ms ease-in-out;
+  animation-iteration-count: 1;
   transform: rotate(90deg);
 }
 
 .fa-caret-right.closed {
   animation: open 300ms ease-in-out;
+  animation-iteration-count: 1;
   animation-direction: reverse;
   transform: rotate(0);
 }
@@ -92,14 +90,5 @@
   }
   100% {
     transform: rotate(90deg);
-  }
-}
-
-@keyframes show-body {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
   }
 }
