@@ -18943,6 +18943,66 @@ export type ViewerHovercardContext = HovercardContext & {
 };
 
 
+export type PrQueryVariables = Exact<{
+  repo: Scalars['String'];
+}>;
+
+
+export type PrQuery = (
+  { __typename?: 'Query' }
+  & { viewer: (
+    { __typename?: 'User' }
+    & { repository?: Maybe<(
+      { __typename?: 'Repository' }
+      & { pullRequests: (
+        { __typename?: 'PullRequestConnection' }
+        & Pick<PullRequestConnection, 'totalCount'>
+        & { nodes?: Maybe<Array<Maybe<(
+          { __typename?: 'PullRequest' }
+          & Pick<PullRequest, 'title' | 'url'>
+          & { reviews?: Maybe<(
+            { __typename?: 'PullRequestReviewConnection' }
+            & { nodes?: Maybe<Array<Maybe<(
+              { __typename?: 'PullRequestReview' }
+              & { author?: Maybe<(
+                { __typename?: 'Bot' }
+                & Pick<Bot, 'login'>
+              ) | (
+                { __typename?: 'EnterpriseUserAccount' }
+                & Pick<EnterpriseUserAccount, 'login'>
+              ) | (
+                { __typename?: 'Mannequin' }
+                & Pick<Mannequin, 'login'>
+              ) | (
+                { __typename?: 'Organization' }
+                & Pick<Organization, 'login'>
+              ) | (
+                { __typename?: 'User' }
+                & Pick<User, 'login'>
+              )> }
+            )>>> }
+          )>, author?: Maybe<(
+            { __typename?: 'Bot' }
+            & Pick<Bot, 'login' | 'url' | 'avatarUrl'>
+          ) | (
+            { __typename?: 'EnterpriseUserAccount' }
+            & Pick<EnterpriseUserAccount, 'login' | 'url' | 'avatarUrl'>
+          ) | (
+            { __typename?: 'Mannequin' }
+            & Pick<Mannequin, 'login' | 'url' | 'avatarUrl'>
+          ) | (
+            { __typename?: 'Organization' }
+            & Pick<Organization, 'login' | 'url' | 'avatarUrl'>
+          ) | (
+            { __typename?: 'User' }
+            & Pick<User, 'login' | 'url' | 'avatarUrl'>
+          )> }
+        )>>> }
+      ) }
+    )> }
+  ) }
+);
+
 export type UserRepoQueryVariables = Exact<{
   startCursor?: Maybe<Scalars['String']>;
 }>;
@@ -18967,6 +19027,33 @@ export type UserRepoQuery = (
 );
 
 
+export const PrDocument = gql`
+    query PR($repo: String!) {
+  viewer {
+    repository(name: $repo) {
+      pullRequests(states: OPEN, first: 100) {
+        nodes {
+          title
+          url
+          reviews(first: 100, states: APPROVED) {
+            nodes {
+              author {
+                login
+              }
+            }
+          }
+          author {
+            login
+            url
+            avatarUrl
+          }
+        }
+        totalCount
+      }
+    }
+  }
+}
+    `;
 export const UserRepoDocument = gql`
     query UserRepo($startCursor: String) {
   viewer {
@@ -18997,6 +19084,9 @@ export type SdkFunctionWrapper = <T>(action: () => Promise<T>) => Promise<T>;
 const defaultWrapper: SdkFunctionWrapper = sdkFunction => sdkFunction();
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    PR(variables: PrQueryVariables, requestHeaders?: Headers): Promise<PrQuery> {
+      return withWrapper(() => client.request<PrQuery>(print(PrDocument), variables, requestHeaders));
+    },
     UserRepo(variables?: UserRepoQueryVariables, requestHeaders?: Headers): Promise<UserRepoQuery> {
       return withWrapper(() => client.request<UserRepoQuery>(print(UserRepoDocument), variables, requestHeaders));
     }

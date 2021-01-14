@@ -1,0 +1,22 @@
+img {
+  border-radius: 50%;
+}
+
+.pr-author {
+  cursor: pointer;
+}
+
+.title-wrapper {
+  display: grid;
+  grid-template-columns: 75% 20%;
+  grid-gap: 5px;
+  align-items: center;
+}
+
+.title-wrapper > div {
+  overflow-wrap: break-word;
+}
+
+.pr-title:hover {
+  text-decoration: underline;
+}

@@ -1,6 +1,6 @@
 query UserRepo($startCursor: String) {
   viewer {
-    repositories(first:100, after: $startCursor) {
+    repositories(first: 100, after: $startCursor) {
       pageInfo {
         hasNextPage
         hasPreviousPage
