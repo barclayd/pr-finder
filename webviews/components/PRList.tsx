@@ -2,10 +2,10 @@ import { FC } from 'react';
 import { getSdk } from '../generated/graphql';
 import { useQuery } from 'react-query';
 import { GraphQLService } from '../services/GraphQLService';
-import './PRList.css';
 import { VSCodeService } from '../services/VSCodeService';
 import { Message } from '../../globals/types';
 import { Table } from './Table';
+import '../styles/PRList.css';
 
 interface PRListProps {
   accessToken: string | undefined;

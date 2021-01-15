@@ -1,4 +1,3 @@
-import './sidebar.css';
 import { FC, useState } from 'react';
 import { Message } from '../../globals/types';
 import { useCombobox } from 'downshift';
@@ -9,6 +8,7 @@ import { Accordion } from './Accordion';
 import { Repo } from './SidebarContainer';
 import { SearchIcon } from './icons/Search';
 import { TrashIcon } from './icons/Trash';
+import '../styles/sidebar.css';
 
 interface Props {
   repos: Repo[];

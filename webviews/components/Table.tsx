@@ -1,5 +1,5 @@
-import './table.css';
 import { CaretIcon } from './icons/CaretIcon';
+import '../styles/table.css';
 
 interface TableProps<T> {
   records: T[];

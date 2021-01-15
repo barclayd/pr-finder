@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import './accordion.css';
+import '../styles/accordion.css';
 
 interface AccordionItem {
   name: string;
