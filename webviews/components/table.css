@@ -1,9 +1,13 @@
 .content-table {
   border-collapse: collapse;
-  margin: 10px 0;
   overflow: hidden;
+  margin-top: 5px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   width: 100%;
+}
+
+.content-table:not(:first-child) {
+  margin: 10px 0;
 }
 
 .content-table thead tr {
@@ -69,26 +73,9 @@
   width: 6px;
   margin-right: 5px;
   cursor: pointer;
+  transition: all 350ms;
 }
 
 .fa-caret-right.open {
-  animation: open 300ms ease-in-out;
-  animation-iteration-count: 1;
   transform: rotate(90deg);
-}
-
-.fa-caret-right.closed {
-  animation: open 300ms ease-in-out;
-  animation-iteration-count: 1;
-  animation-direction: reverse;
-  transform: rotate(0);
-}
-
-@keyframes open {
-  0% {
-    transform: rotate(0);
-  }
-  100% {
-    transform: rotate(90deg);
-  }
 }
