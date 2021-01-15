@@ -44,32 +44,30 @@ export const Table = <T extends object>({
   isOpen = true,
   onCaretClick,
   checkbox,
-}: TableProps<T>) => {
-  const TableHead: FC = () => {
-    if (!tableName) {
-      return (
+}: TableProps<T>) => (
+  <table
+    className={[
+      'content-table',
+      Object.keys(records[0]).length === 1 ? 'single-column' : 'multi-column',
+    ].join(' ')}
+  >
+    <thead>
+      {tableName ? (
+        <tr>
+          <th>
+            <Caret isOpen={isOpen} onCaretClick={onCaretClick} />
+            {tableName}
+          </th>
+        </tr>
+      ) : (
         <tr>
           {Object.keys(records[0]).map((column, index) => (
             <th key={column + index}>{column !== 'track' ? column : '✓'}</th>
           ))}
         </tr>
-      );
-    }
-    return (
-      <tr>
-        <th>
-          <Caret isOpen={isOpen} onCaretClick={onCaretClick} />
-          {tableName}
-        </th>
-      </tr>
-    );
-  };
-
-  const TableBody: FC = () => {
-    if (!isOpen) {
-      return <></>;
-    }
-    return (
+      )}
+    </thead>
+    {isOpen ? (
       <tbody className={checkbox ? 'checkbox' : undefined}>
         {records.map((record, index) => (
           <tr key={record.toString() + index}>
@@ -92,20 +90,6 @@ export const Table = <T extends object>({
           </tr>
         ))}
       </tbody>
-    );
-  };
-
-  return (
-    <table
-      className={[
-        'content-table',
-        Object.keys(records[0]).length === 1 ? 'single-column' : 'multi-column',
-      ].join(' ')}
-    >
-      <thead>
-        <TableHead />
-      </thead>
-      <TableBody />
-    </table>
-  );
-};
+    ) : null}
+  </table>
+);
