@@ -7,6 +7,8 @@ import { VSCodeService } from '../services/VSCodeService';
 import { PRList } from './PRList';
 import { Accordion } from './Accordion';
 import { Repo } from './SidebarContainer';
+import { SearchIcon } from './icons/Search';
+import { TrashIcon } from './icons/Trash';
 
 interface Props {
   repos: Repo[];
@@ -15,7 +17,12 @@ interface Props {
   setFilteredItems: (items: string[]) => void;
 }
 
-export const Sidebar: FC<Props> = ({ filteredItems, setFilteredItems, repos, accessToken }) => {
+export const Sidebar: FC<Props> = ({
+  filteredItems,
+  setFilteredItems,
+  repos,
+  accessToken,
+}) => {
   const [openPRList, setOpenPRList] = useState<string | undefined>(undefined);
   const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
   const {
@@ -159,21 +166,7 @@ export const Sidebar: FC<Props> = ({ filteredItems, setFilteredItems, repos, acc
                       width: '20%',
                     }}
                   >
-                    <svg
-                      aria-hidden="true"
-                      focusable="false"
-                      data-prefix="fas"
-                      data-icon="search"
-                      className="svg-inline--fa fa-search fa-w-16"
-                      role="img"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 512 512"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
-                      ></path>
-                    </svg>
+                    <SearchIcon />
                   </button>
                   <input
                     {...getInputProps()}
@@ -223,24 +216,7 @@ export const Sidebar: FC<Props> = ({ filteredItems, setFilteredItems, repos, acc
                 isOpen
                 records={trackedRepos.map((repo) => ({
                   name: repo.name,
-                  track: (
-                    <svg
-                      aria-hidden="true"
-                      focusable="false"
-                      data-prefix="far"
-                      data-icon="trash-alt"
-                      className="svg-inline--fa fa-trash-alt fa-w-14"
-                      role="img"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 448 512"
-                      onClick={() => onTrackedRepoClick(repo)}
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M268 416h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12zM432 80h-82.41l-34-56.7A48 48 0 0 0 274.41 0H173.59a48 48 0 0 0-41.16 23.3L98.41 80H16A16 16 0 0 0 0 96v16a16 16 0 0 0 16 16h16v336a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128h16a16 16 0 0 0 16-16V96a16 16 0 0 0-16-16zM171.84 50.91A6 6 0 0 1 177 48h94a6 6 0 0 1 5.15 2.91L293.61 80H154.39zM368 464H80V128h288zm-212-48h24a12 12 0 0 0 12-12V188a12 12 0 0 0-12-12h-24a12 12 0 0 0-12 12v216a12 12 0 0 0 12 12z"
-                      ></path>
-                    </svg>
-                  ),
+                  track: <TrashIcon onClick={() => onTrackedRepoClick(repo)} />,
                 }))}
                 onRecordClick={onRecordClick}
               />
