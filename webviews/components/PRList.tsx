@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { getSdk } from '../generated/graphql';
 import { useQuery } from 'react-query';
 import { GraphQLService } from '../services/GraphQLService';
@@ -33,7 +33,10 @@ export const PRList: FC<PRListProps> = ({
   isOpen,
   onOpenListClick,
 }) => {
+  const [pullRequests, setPullRequests] = useState<any[]>([]);
+
   const fallback = <></>;
+
   const client = accessToken
     ? new GraphQLService(accessToken).client
     : undefined;
@@ -45,29 +48,32 @@ export const PRList: FC<PRListProps> = ({
     ['pr', repoName],
     async () => await sdk.PR({ repo: repoName }),
   );
-  const pullRequests = data.data?.viewer.repository?.pullRequests;
-  if (!pullRequests) {
-    return fallback;
-  }
-  const { nodes } = pullRequests;
-  if (!nodes) {
-    return fallback;
-  }
-  const pullRequestsWaitingReview = nodes.filter(
-    (node) =>
-      node?.author?.login !== username &&
-      !node?.reviews?.nodes
-        ?.map((review) => review?.author?.login)
-        .includes(username),
-  );
-  const totalCount = pullRequestsWaitingReview.length;
-  if (totalCount === 0) {
+  useEffect(() => {
+    const pullRequests = data.data?.viewer.repository?.pullRequests;
+    if (!pullRequests) {
+      return;
+    }
+    const { nodes } = pullRequests;
+    if (!nodes) {
+      return;
+    }
+    const pullRequestsWaitingReview = nodes.filter(
+      (node) =>
+        node?.author?.login !== username &&
+        !node?.reviews?.nodes
+          ?.map((review) => review?.author?.login)
+          .includes(username),
+    );
+    setPullRequests(pullRequestsWaitingReview);
+  }, [data]);
+
+  if (pullRequests.length === 0) {
     return fallback;
   }
 
   return (
     <Table
-      records={pullRequestsWaitingReview
+      records={pullRequests
         .filter((pr) => pr !== null && pr !== undefined)
         .map((pr) => ({
           title: (
@@ -90,7 +96,7 @@ export const PRList: FC<PRListProps> = ({
           ),
         }))}
       isOpen={isOpen}
-      tableName={repoName + ` (${totalCount})`}
+      tableName={repoName + ` (${pullRequests.length})`}
       onCaretClick={onOpenListClick}
       checkbox
     />
