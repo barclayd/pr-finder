@@ -56,7 +56,7 @@ export const PRList: FC<PRListProps> = ({
   const pullRequestsWaitingReview = nodes.filter(
     (node) =>
       node?.author?.login !== username &&
-      node?.reviews?.nodes?.map((review) => review?.author?.login !== username),
+      !node?.reviews?.nodes?.map((review) => review?.author?.login).includes(username),
   );
   const totalCount = pullRequestsWaitingReview.length;
   if (totalCount === 0) {
