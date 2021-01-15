@@ -10,7 +10,7 @@ ReactDOM.render(
   <QueryClientProvider client={queryClient}>
     <ReactQueryDevtools initialIsOpen />
     <React.StrictMode>
-      <Sidebar />
+        <Sidebar />
     </React.StrictMode>
   </QueryClientProvider>,
   document.getElementById('root'),
