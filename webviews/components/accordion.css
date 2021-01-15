@@ -15,9 +15,13 @@
 .tab-label {
   display: flex;
   justify-content: flex-start;
-  padding: 0.25em 0;
+  padding: 0.2em 0;
   cursor: pointer;
-  color: var(--vscode-list-deemphasizedForeground);;
+  color: var(--vscode-list-deemphasizedForeground);
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.9rem;
+  filter: brightness(80%);
 }
 
 .tab-label::before {
@@ -27,27 +31,29 @@
   text-align: center;
   transition: all 0.35s;
   margin-right: 3px;
+  color: var(--vscode-descriptionForeground);;
+  font-weight: lighter;
 }
 
 .tab-content {
   max-height: 0;
-  padding: 0.25em 0;
+  padding: 0.2em 0;
   transition: all 350ms;
 }
 
-input {
+input[type="checkbox"] {
   position: absolute;
   opacity: 0;
   z-index: -1;
   margin: 0;
 }
 
-input:checked ~ .tab-content {
+input[type="checkbox"]:checked ~ .tab-content {
   max-height: 100vh;
   padding: 0.25em 0;
 }
 
-input:checked + .tab-label::before {
+input[type="checkbox"]:checked + .tab-label::before {
   transform: rotate(90deg);
   margin-top: 2px;
 }

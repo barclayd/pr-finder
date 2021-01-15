@@ -1,26 +1,25 @@
 import { FC } from 'react';
 import './accordion.css';
 
-export const Accordion: FC = () => (
+interface AccordionItem {
+  name: string;
+  content: JSX.Element | null;
+}
+
+interface Props {
+  content: AccordionItem[];
+}
+
+export const Accordion: FC<Props> = ({ content }) => (
   <div className="accordion">
-    <div className="tab">
-      <input type="checkbox" id="chck1" />
-      <label className="tab-label" htmlFor="chck1">
-        Item 1
-      </label>
-      <div className="tab-content">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsum,
-        reiciendis!
+    {content.map(({ name, content }, index) => (
+      <div className="tab" key={name + index}>
+        <input type="checkbox" id={name} disabled={!content} />
+        <label className="tab-label" htmlFor={name}>
+          {name}
+        </label>
+        <div className="tab-content">{content}</div>
       </div>
-    </div>
-    <div className="tab">
-      <input type="checkbox" id="chck2" />
-      <label className="tab-label" htmlFor="chck2">
-        Item 2
-      </label>
-      <div className="tab-content">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. A, in!
-      </div>
-    </div>
+    ))}
   </div>
 );
