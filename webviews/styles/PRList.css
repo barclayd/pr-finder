@@ -20,3 +20,11 @@ img {
 .pr-title:hover {
   text-decoration: underline;
 }
+
+.pr-count {
+  font-weight: 300;
+}
+
+.pr-title {
+  font-weight: normal;
+}

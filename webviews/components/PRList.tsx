@@ -49,6 +49,9 @@ export const PRList: FC<PRListProps> = ({
   const data = useQuery(
     ['pr', repoName],
     async () => await sdk.PR({ repo: repoName }),
+    {
+      staleTime: GraphQLService.STALE_TIME,
+    },
   );
   useEffect(() => {
     const pullRequestsForRepo = data.data?.viewer.repository?.pullRequests;
@@ -77,6 +80,8 @@ export const PRList: FC<PRListProps> = ({
     return fallback;
   }
 
+  const TableName = () => <span className="pr-title">{repoName} <span className="pr-count">{`(${activePullRequests[repoName as any]?.length})` ?? ''}</span></span>
+
   return (
     <Table
       records={activePullRequests[repoName as any]
@@ -102,9 +107,7 @@ export const PRList: FC<PRListProps> = ({
           ),
         }))}
       isOpen={isOpen}
-      tableName={
-        repoName + ` (${activePullRequests[repoName as any]?.length ?? ''})`
-      }
+      tableName={<TableName />}
       onCaretClick={onOpenListClick}
       checkbox
     />
