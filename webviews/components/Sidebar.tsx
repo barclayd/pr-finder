@@ -123,6 +123,9 @@ export const Sidebar: FC<Props> = ({
 
   const onTrackedRepoClick = (clickedRepo: Repo) => {
     setTrackedRepos(trackedRepos.filter((repo) => repo !== clickedRepo));
+    const updatedPullRequests = activePullRequests;
+    delete updatedPullRequests[clickedRepo.name as any];
+    setActivePullRequests(updatedPullRequests);
   };
 
   const onOpenListClick = (clickedRepoName: string) => {

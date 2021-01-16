@@ -3,7 +3,7 @@ import '../styles/table.css';
 
 interface TableProps<T> {
   records?: T[];
-  tableName?: string;
+  tableName?: JSX.Element;
   checkbox?: boolean;
   isOpen: boolean;
   onRecordClick?: (record: T) => void;

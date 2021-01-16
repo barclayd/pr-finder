@@ -11,10 +11,10 @@
 }
 
 .content-table thead tr {
-  background-color: var(--vscode-icon-foreground);
-  color: var(--vscode-checkbox-background);
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-descriptionForeground);
   text-align: left;
-  font-weight: bold;
+  font-weight: normal;
   text-transform: capitalize;
 }
 
