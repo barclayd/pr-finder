@@ -1,11 +1,11 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { getSdk } from '../generated/graphql';
 import { useQuery } from 'react-query';
 import { GraphQLService } from '../services/GraphQLService';
-import './PRList.css';
 import { VSCodeService } from '../services/VSCodeService';
 import { Message } from '../../globals/types';
 import { Table } from './Table';
+import '../styles/PRList.css';
 
 interface PRListProps {
   accessToken: string | undefined;
@@ -13,6 +13,8 @@ interface PRListProps {
   username: string;
   isOpen: boolean;
   onOpenListClick: () => void;
+  activePullRequests: any[];
+  setActivePullRequests: (prList: any[]) => void;
 }
 
 const goToPage = (url: string) => {
@@ -32,8 +34,11 @@ export const PRList: FC<PRListProps> = ({
   username,
   isOpen,
   onOpenListClick,
+  activePullRequests,
+  setActivePullRequests,
 }) => {
   const fallback = <></>;
+
   const client = accessToken
     ? new GraphQLService(accessToken).client
     : undefined;
@@ -45,28 +50,38 @@ export const PRList: FC<PRListProps> = ({
     ['pr', repoName],
     async () => await sdk.PR({ repo: repoName }),
   );
-  const pullRequests = data.data?.viewer.repository?.pullRequests;
-  if (!pullRequests) {
+  useEffect(() => {
+    const pullRequestsForRepo = data.data?.viewer.repository?.pullRequests;
+    if (!pullRequestsForRepo) {
+      return;
+    }
+    const { nodes } = pullRequestsForRepo;
+    if (!nodes) {
+      return;
+    }
+    const pullRequestsWaitingReview = nodes.filter(
+      (node) =>
+        node?.author?.login !== username &&
+        !node?.reviews?.nodes
+          ?.map((review) => review?.author?.login)
+          .includes(username),
+    );
+    const updatedPullRequests = {
+      ...activePullRequests,
+      [repoName]: pullRequestsWaitingReview,
+    };
+    setActivePullRequests(updatedPullRequests);
+  }, [data.data?.viewer.repository?.pullRequests]);
+
+  if (activePullRequests[repoName as any]?.length === 0) {
     return fallback;
   }
-  const { nodes } = pullRequests;
-  if (!nodes) {
-    return fallback;
-  }
-  const pullRequestsWaitingReview = nodes.filter(
-    (node) =>
-      node?.author?.login !== username &&
-      node?.reviews?.nodes?.map((review) => review?.author?.login !== username),
-  );
-  const totalCount = pullRequestsWaitingReview.length;
-  if (totalCount === 0) {
-    return <></>;
-  }
+
   return (
     <Table
-      records={pullRequestsWaitingReview
-        .filter((pr) => pr !== null && pr !== undefined)
-        .map((pr) => ({
+      records={activePullRequests[repoName as any]
+        ?.filter((pr: any) => pr !== null && pr !== undefined)
+        .map((pr: any) => ({
           title: (
             <div className="title-wrapper">
               <div className="pr-title" onClick={() => goToPage(pr!.url)}>
@@ -87,7 +102,9 @@ export const PRList: FC<PRListProps> = ({
           ),
         }))}
       isOpen={isOpen}
-      tableName={repoName + ` (${totalCount})`}
+      tableName={
+        repoName + ` (${activePullRequests[repoName as any]?.length ?? ''})`
+      }
       onCaretClick={onOpenListClick}
       checkbox
     />

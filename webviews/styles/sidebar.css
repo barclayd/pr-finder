@@ -6,6 +6,8 @@ h1 {
 .input-wrapper {
   display: flex;
   margin-top: 10px;
+  justify-content: center;
+  align-items: center;
 }
 
 h3 {
@@ -20,12 +22,21 @@ h3 {
 
 .fa-search {
   width: 12px;
+  color: var(--vscode-list-deemphasizedForeground);
 }
 
 .search-button {
   background-color: var(--vscode-input-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
 }
 
 .dropdown-list-item {
   cursor: pointer;
+}
+
+label {
+  color: var(--vscode-descriptionForeground);
 }
