@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { getSdk } from '../generated/graphql';
 import { useQuery } from 'react-query';
 import { GraphQLService } from '../services/GraphQLService';
@@ -13,6 +13,8 @@ interface PRListProps {
   username: string;
   isOpen: boolean;
   onOpenListClick: () => void;
+  activePullRequests: any[];
+  setActivePullRequests: (prList: any[]) => void;
 }
 
 const goToPage = (url: string) => {
@@ -32,9 +34,9 @@ export const PRList: FC<PRListProps> = ({
   username,
   isOpen,
   onOpenListClick,
+  activePullRequests,
+  setActivePullRequests,
 }) => {
-  const [pullRequests, setPullRequests] = useState<any[]>([]);
-
   const fallback = <></>;
 
   const client = accessToken
@@ -49,11 +51,11 @@ export const PRList: FC<PRListProps> = ({
     async () => await sdk.PR({ repo: repoName }),
   );
   useEffect(() => {
-    const pullRequests = data.data?.viewer.repository?.pullRequests;
-    if (!pullRequests) {
+    const pullRequestsForRepo = data.data?.viewer.repository?.pullRequests;
+    if (!pullRequestsForRepo) {
       return;
     }
-    const { nodes } = pullRequests;
+    const { nodes } = pullRequestsForRepo;
     if (!nodes) {
       return;
     }
@@ -64,18 +66,22 @@ export const PRList: FC<PRListProps> = ({
           ?.map((review) => review?.author?.login)
           .includes(username),
     );
-    setPullRequests(pullRequestsWaitingReview);
-  }, [data]);
+    const updatedPullRequests = {
+      ...activePullRequests,
+      [repoName]: pullRequestsWaitingReview,
+    };
+    setActivePullRequests(updatedPullRequests);
+  }, [data.data?.viewer.repository?.pullRequests]);
 
-  if (pullRequests.length === 0) {
+  if (activePullRequests[repoName as any]?.length === 0) {
     return fallback;
   }
 
   return (
     <Table
-      records={pullRequests
-        .filter((pr) => pr !== null && pr !== undefined)
-        .map((pr) => ({
+      records={activePullRequests[repoName as any]
+        ?.filter((pr: any) => pr !== null && pr !== undefined)
+        .map((pr: any) => ({
           title: (
             <div className="title-wrapper">
               <div className="pr-title" onClick={() => goToPage(pr!.url)}>
@@ -96,7 +102,9 @@ export const PRList: FC<PRListProps> = ({
           ),
         }))}
       isOpen={isOpen}
-      tableName={repoName + ` (${pullRequests.length})`}
+      tableName={
+        repoName + ` (${activePullRequests[repoName as any]?.length ?? ''})`
+      }
       onCaretClick={onOpenListClick}
       checkbox
     />

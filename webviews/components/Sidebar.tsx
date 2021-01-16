@@ -23,6 +23,7 @@ export const Sidebar: FC<Props> = ({
   repos,
   accessToken,
 }) => {
+  const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
   const [openPRList, setOpenPRList] = useState<string | undefined>(undefined);
   const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
   const {
@@ -105,6 +106,17 @@ export const Sidebar: FC<Props> = ({
     },
   });
 
+  const activePullRequestsCount = () => {
+    const count = Object.keys(activePullRequests).reduce((acc, key) => {
+      acc += activePullRequests[key as any].length;
+      return acc;
+    }, 0);
+    if (count === 0) {
+      return '';
+    }
+    return count > 0 ? `(${count})` : 0;
+  };
+
   const findRepoByName = (name: string): Repo | undefined => {
     return repos.find((repo) => repo.name === name);
   };
@@ -133,7 +145,7 @@ export const Sidebar: FC<Props> = ({
     <Accordion
       content={[
         {
-          name: 'PRs',
+          name: `PRs ${activePullRequestsCount()}`,
           content:
             trackedRepos.length > 0 ? (
               <>
@@ -145,6 +157,8 @@ export const Sidebar: FC<Props> = ({
                     repoName={repo.name}
                     username="barclayd"
                     onOpenListClick={() => onOpenListClick(repo.name)}
+                    activePullRequests={activePullRequests}
+                    setActivePullRequests={setActivePullRequests}
                   />
                 ))}
               </>
