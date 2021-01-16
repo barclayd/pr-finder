@@ -158,6 +158,7 @@ export const Sidebar: FC<Props> = ({
                     isOpen={openPRList === repo.name}
                     accessToken={accessToken}
                     repoName={repo.name}
+                    repoUrl={repo.url}
                     username="barclayd"
                     onOpenListClick={() => onOpenListClick(repo.name)}
                     activePullRequests={activePullRequests}

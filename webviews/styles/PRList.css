@@ -19,6 +19,7 @@ img {
 
 .pr-title:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .pr-count {

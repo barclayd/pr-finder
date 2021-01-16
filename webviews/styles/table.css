@@ -27,6 +27,10 @@
   padding: 5px;
 }
 
+.content-table td {
+  font-size: 0.9rem;
+}
+
 .content-table thead tr th:last-child {
   display: flex;
   justify-content: center;
@@ -52,7 +56,7 @@
 }
 
 .content-table tbody tr td:last-child {
-  padding: 10px 0;
+  padding: 7px 0;
   display: flex;
   justify-content: center;
 }
@@ -78,4 +82,9 @@
 
 .fa-caret-right.open {
   transform: rotate(90deg);
+}
+
+.fa-sync-alt {
+  width: 10px;
+  cursor: pointer;
 }
