@@ -20,21 +20,33 @@
 
 .content-table thead tr th:not(:last-child) {
   border-right: 2px solid #000000;
+  padding: 0 5px;
+}
+
+.content-table thead th {
+  font-weight: normal;
 }
 
 .content-table th,
 .content-table td:first-child {
-  padding: 5px;
+  padding: 3px;
 }
 
 .content-table td {
   font-size: 0.9rem;
 }
 
-.content-table thead tr th:last-child {
+.content-table.single-column thead tr th {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 5%;
+}
+
+.content-table.multi-column thead tr th:last-child {
   display: flex;
   justify-content: center;
-  padding: 5px 0;
+  padding: 3px 0;
 }
 
 .content-table td {
@@ -85,6 +97,6 @@
 }
 
 .fa-sync-alt {
-  width: 10px;
+  width: 11px;
   cursor: pointer;
 }

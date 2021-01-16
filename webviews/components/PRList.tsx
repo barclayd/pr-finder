@@ -94,7 +94,7 @@ export const PRList: FC<PRListProps> = ({
 
   const TableName = () => (
     <span className="pr-title" onClick={() => goToPage(repoUrl + '/pulls')}>
-      {repoName}
+      {repoName}{' '}
       <span className="pr-count">
         {`(${activePullRequests[repoName as any]?.length})` ?? ''}
       </span>
