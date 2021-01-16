@@ -19,4 +19,13 @@ img {
 
 .pr-title:hover {
   text-decoration: underline;
+  cursor: pointer;
+}
+
+.pr-count {
+  font-weight: 300;
+}
+
+.pr-title {
+  font-weight: normal;
 }

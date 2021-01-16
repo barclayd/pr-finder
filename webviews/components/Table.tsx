@@ -1,13 +1,15 @@
 import { CaretIcon } from './icons/CaretIcon';
+import { SyncIcon } from './icons/SyncIcon';
 import '../styles/table.css';
 
 interface TableProps<T> {
   records?: T[];
-  tableName?: string;
+  tableName?: JSX.Element;
   checkbox?: boolean;
   isOpen: boolean;
   onRecordClick?: (record: T) => void;
   onCaretClick?: () => void;
+  onSyncClick?: () => void;
 }
 
 export const Table = <T extends object>({
@@ -16,6 +18,7 @@ export const Table = <T extends object>({
   tableName,
   isOpen = true,
   onCaretClick,
+  onSyncClick,
   checkbox,
 }: TableProps<T>) => {
   if (!records) {
@@ -35,6 +38,7 @@ export const Table = <T extends object>({
             <th>
               <CaretIcon isOpen={isOpen} onCaretClick={onCaretClick} />
               {tableName}
+              <SyncIcon onClick={onSyncClick} />
             </th>
           </tr>
         ) : (

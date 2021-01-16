@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { getSdk } from '../generated/graphql';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
 import { Message } from '../../globals/types';
@@ -13,6 +13,7 @@ interface PRListProps {
   username: string;
   isOpen: boolean;
   onOpenListClick: () => void;
+  repoUrl: string;
   activePullRequests: any[];
   setActivePullRequests: (prList: any[]) => void;
 }
@@ -36,8 +37,12 @@ export const PRList: FC<PRListProps> = ({
   onOpenListClick,
   activePullRequests,
   setActivePullRequests,
+  repoUrl,
 }) => {
   const fallback = <></>;
+
+  const queryKey = ['pr', repoName];
+  const queryClient = useQueryClient();
 
   const client = accessToken
     ? new GraphQLService(accessToken).client
@@ -47,8 +52,14 @@ export const PRList: FC<PRListProps> = ({
   }
   const sdk = getSdk(client);
   const data = useQuery(
-    ['pr', repoName],
+    queryKey,
     async () => await sdk.PR({ repo: repoName }),
+    {
+      staleTime: GraphQLService.STALE_TIME,
+      refetchInterval: GraphQLService.REFETCH_INTERVAL,
+      refetchOnMount: false,
+      refetchIntervalInBackground: true,
+    },
   );
   useEffect(() => {
     const pullRequestsForRepo = data.data?.viewer.repository?.pullRequests;
@@ -77,6 +88,19 @@ export const PRList: FC<PRListProps> = ({
     return fallback;
   }
 
+  const onSyncClick = async () => {
+    await queryClient.invalidateQueries(queryKey)
+  }
+
+  const TableName = () => (
+    <span className="pr-title" onClick={() => goToPage(repoUrl + '/pulls')}>
+      {repoName}{' '}
+      <span className="pr-count">
+        {`(${activePullRequests[repoName as any]?.length})` ?? ''}
+      </span>
+    </span>
+  );
+
   return (
     <Table
       records={activePullRequests[repoName as any]
@@ -102,10 +126,9 @@ export const PRList: FC<PRListProps> = ({
           ),
         }))}
       isOpen={isOpen}
-      tableName={
-        repoName + ` (${activePullRequests[repoName as any]?.length ?? ''})`
-      }
+      tableName={<TableName />}
       onCaretClick={onOpenListClick}
+      onSyncClick={onSyncClick}
       checkbox
     />
   );

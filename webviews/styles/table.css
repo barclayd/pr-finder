@@ -11,26 +11,42 @@
 }
 
 .content-table thead tr {
-  background-color: var(--vscode-icon-foreground);
-  color: var(--vscode-checkbox-background);
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-descriptionForeground);
   text-align: left;
-  font-weight: bold;
+  font-weight: normal;
   text-transform: capitalize;
 }
 
 .content-table thead tr th:not(:last-child) {
   border-right: 2px solid #000000;
+  padding: 0 5px;
+}
+
+.content-table thead th {
+  font-weight: normal;
 }
 
 .content-table th,
 .content-table td:first-child {
-  padding: 5px;
+  padding: 3px;
 }
 
-.content-table thead tr th:last-child {
+.content-table td {
+  font-size: 0.9rem;
+}
+
+.content-table.single-column thead tr th {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 5%;
+}
+
+.content-table.multi-column thead tr th:last-child {
   display: flex;
   justify-content: center;
-  padding: 5px 0;
+  padding: 3px 0;
 }
 
 .content-table td {
@@ -52,7 +68,7 @@
 }
 
 .content-table tbody tr td:last-child {
-  padding: 10px 0;
+  padding: 7px 0;
   display: flex;
   justify-content: center;
 }
@@ -78,4 +94,9 @@
 
 .fa-caret-right.open {
   transform: rotate(90deg);
+}
+
+.fa-sync-alt {
+  width: 11px;
+  cursor: pointer;
 }

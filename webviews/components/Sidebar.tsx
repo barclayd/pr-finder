@@ -12,8 +12,8 @@ import '../styles/sidebar.css';
 
 interface Props {
   repos: Repo[];
-  filteredItems: string[];
   accessToken?: string;
+  filteredItems: string[];
   setFilteredItems: (items: string[]) => void;
 }
 
@@ -49,7 +49,7 @@ export const Sidebar: FC<Props> = ({
               (repo) =>
                 !trackedRepos
                   .map((repo) => repo.name.toLowerCase())
-                  .includes(repo),
+                  .includes(repo.toLowerCase()),
             ),
         );
       }
@@ -121,8 +121,11 @@ export const Sidebar: FC<Props> = ({
     return repos.find((repo) => repo.name === name);
   };
 
-  const onTrackedRepoClick = (clickedRepo: Repo) => {
+  const onTrackedRepoDeleteClick = (clickedRepo: Repo) => {
     setTrackedRepos(trackedRepos.filter((repo) => repo !== clickedRepo));
+    const updatedPullRequests = activePullRequests;
+    delete updatedPullRequests[clickedRepo.name as any];
+    setActivePullRequests(updatedPullRequests);
   };
 
   const onOpenListClick = (clickedRepoName: string) => {
@@ -155,6 +158,7 @@ export const Sidebar: FC<Props> = ({
                     isOpen={openPRList === repo.name}
                     accessToken={accessToken}
                     repoName={repo.name}
+                    repoUrl={repo.url}
                     username="barclayd"
                     onOpenListClick={() => onOpenListClick(repo.name)}
                     activePullRequests={activePullRequests}
@@ -230,7 +234,7 @@ export const Sidebar: FC<Props> = ({
                 isOpen
                 records={trackedRepos.map((repo) => ({
                   name: repo.name,
-                  track: <TrashIcon onClick={() => onTrackedRepoClick(repo)} />,
+                  track: <TrashIcon onClick={() => onTrackedRepoDeleteClick(repo)} />,
                 }))}
                 onRecordClick={onRecordClick}
               />
