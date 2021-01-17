@@ -1,8 +1,8 @@
-import { vsCodeData } from '../globals/types';
+import { VSCodeData } from '../globals/types';
 
 declare global {
   const tsVscode: {
-    postMessage: (Data: vsCodeData) => void;
+    postMessage: (Data: VSCodeData) => void;
   };
 }
 
