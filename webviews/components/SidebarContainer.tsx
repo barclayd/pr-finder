@@ -1,7 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 import { getSdk } from '../generated/graphql';
 import { useEffect, useState } from 'react';
-import { Message, vsCodeData } from '../../globals/types';
+import { Message, VSCodeData } from '../../globals/types';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
 import { Sidebar } from './Sidebar';
@@ -21,7 +21,7 @@ export const SidebarContainer = () => {
 
   useEffect(() => {
     window.addEventListener('message', (event) => {
-      const message: vsCodeData = event.data;
+      const message: VSCodeData = event.data;
       switch (message.type) {
         case Message.addRepo:
           console.log(message);

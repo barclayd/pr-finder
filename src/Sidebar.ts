@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { getNonce } from './scriptLimiter';
-import { Message, vsCodeData } from '../globals/types';
+import { Message, NewPullRequest, VSCodeData } from '../globals/types';
 import { AuthService } from './services/AuthService';
 
 export class Sidebar implements vscode.WebviewViewProvider {
@@ -24,7 +24,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    webviewView.webview.onDidReceiveMessage(async (data: vsCodeData) => {
+    webviewView.webview.onDidReceiveMessage(async (data: VSCodeData) => {
       switch (data.type) {
         case Message.getToken: {
           webviewView.webview.postMessage({
@@ -47,7 +47,19 @@ export class Sidebar implements vscode.WebviewViewProvider {
           if (!data.value) {
             return;
           }
-          vscode.window.showInformationMessage(data.value, 'yes', 'no');
+          const { title, author, repoName, url }: NewPullRequest = data.value;
+          const message = `New Pull Request: ${title} in ${repoName} - opened by ${author.login} - is ready for review`;
+          const viewOnGithub = 'View on GitHub';
+          const show = await vscode.window.showInformationMessage(
+            message,
+            viewOnGithub,
+          );
+          if (show === viewOnGithub) {
+            vscode.commands.executeCommand(
+              'vscode.open',
+              vscode.Uri.parse(url),
+            );
+          }
           break;
         }
         case Message.onInfo: {
