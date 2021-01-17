@@ -58,7 +58,6 @@ export function activate({
       const text = activeTextEditor.document.getText(
         activeTextEditor.selection,
       );
-
       sidebar._view?.webview.postMessage({
         type: Message.addRepo,
         value: text,

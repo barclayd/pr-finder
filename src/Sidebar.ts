@@ -43,6 +43,13 @@ export class Sidebar implements vscode.WebviewViewProvider {
           );
           break;
         }
+        case Message.newPullRequest: {
+          if (!data.value) {
+            return;
+          }
+          vscode.window.showInformationMessage(data.value, 'yes', 'no');
+          break;
+        }
         case Message.onInfo: {
           if (!data.value) {
             return;
