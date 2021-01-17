@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Message } from '../../globals/types';
+import { Message, NewPullRequest } from '../../globals/types';
 import { useCombobox } from 'downshift';
 import { Table } from './Table';
 import { VSCodeService } from '../services/VSCodeService';
@@ -29,7 +29,7 @@ const pullRequestURLMapForRepo = (pullRequestsForRepo: any[]) =>
 const newPullRequests = (
   pullRequestsInState: {},
   newPullRequests: {},
-): any[] | undefined => {
+): NewPullRequest[] | undefined => {
   if (pullRequestsInState === undefined || newPullRequests === undefined) {
     return;
   }
@@ -63,15 +63,14 @@ const newPullRequests = (
       if (!prsForRepo) {
         return acc;
       }
-      const prURLs: string[] = prsForRepo.map((pr) => pr.url);
-      acc.push(...prURLs);
+      acc.push(...prsForRepo.map((pr) => ({ ...pr, repoName })));
       return acc;
     },
-    [] as string[],
+    [] as any[],
   );
 
   return newPullRequestsUrls.filter(
-    (pullRequest) => !pullRequestURLMap.has(pullRequest),
+    (pullRequest) => !pullRequestURLMap.has(pullRequest.url),
   );
 };
 
@@ -101,10 +100,9 @@ export const Sidebar: FC<Props> = ({
       return;
     }
     if (foundPullRequests.length > 0) {
-      console.log('notification time');
-      console.log('old', previousPullRequests);
-      console.log('new', activePullRequests);
-      console.log('found', foundPullRequests);
+      foundPullRequests.forEach((pullRequest) => {
+        VSCodeService.sendMessage(Message.newPullRequest, pullRequest);
+      });
     }
   }, [activePullRequests]);
 
