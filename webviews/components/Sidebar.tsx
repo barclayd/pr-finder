@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Message } from '../../globals/types';
 import { useCombobox } from 'downshift';
 import { Table } from './Table';
@@ -9,6 +9,7 @@ import { Repo } from './SidebarContainer';
 import { SearchIcon } from './icons/Search';
 import { TrashIcon } from './icons/Trash';
 import '../styles/sidebar.css';
+import { usePrevious } from '../hooks/usePrevious';
 
 interface Props {
   repos: Repo[];
@@ -16,6 +17,63 @@ interface Props {
   filteredItems: string[];
   setFilteredItems: (items: string[]) => void;
 }
+
+const pullRequestURLMapForRepo = (pullRequestsForRepo: any[]) =>
+  pullRequestsForRepo.reduce((acc: Map<string, boolean>, pullRequest) => {
+    if (!acc.get(pullRequest)) {
+      acc.set(pullRequest.url, true);
+    }
+    return acc;
+  }, new Map<string, boolean>([]));
+
+const newPullRequests = (
+  pullRequestsInState: {},
+  newPullRequests: {},
+): any[] | undefined => {
+  if (pullRequestsInState === undefined || newPullRequests === undefined) {
+    return;
+  }
+  const pullRequestURLMap = Object.keys(pullRequestsInState).reduce(
+    (acc, repoName) => {
+      const pullRequestsForRepo: any[] =
+        pullRequestsInState[repoName as keyof typeof pullRequestsInState];
+      const pullRequestsMapForRepo = pullRequestURLMapForRepo(
+        pullRequestsForRepo,
+      );
+      if (Array.from(acc.entries()).length > 0) {
+        acc = new Map([...acc, ...pullRequestsMapForRepo]);
+      } else {
+        acc = pullRequestsMapForRepo;
+      }
+      return acc;
+    },
+    new Map<string, boolean>([]),
+  );
+
+  const newPullRequestsUrls = Object.keys(newPullRequests).reduce(
+    (acc, repoName) => {
+      if (
+        pullRequestsInState[repoName as keyof typeof pullRequestsInState] ===
+        undefined
+      ) {
+        return acc;
+      }
+      const prsForRepo: any[] =
+        newPullRequests[repoName as keyof typeof newPullRequests];
+      if (!prsForRepo) {
+        return acc;
+      }
+      const prURLs: string[] = prsForRepo.map((pr) => pr.url);
+      acc.push(...prURLs);
+      return acc;
+    },
+    [] as string[],
+  );
+
+  return newPullRequestsUrls.filter(
+    (pullRequest) => !pullRequestURLMap.has(pullRequest),
+  );
+};
 
 export const Sidebar: FC<Props> = ({
   filteredItems,
@@ -26,6 +84,30 @@ export const Sidebar: FC<Props> = ({
   const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
   const [openPRList, setOpenPRList] = useState<string | undefined>(undefined);
   const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
+  const previousPullRequests = usePrevious(activePullRequests);
+
+  useEffect(() => {
+    if (
+      previousPullRequests === undefined ||
+      previousPullRequests.length === 0
+    ) {
+      return;
+    }
+    const foundPullRequests = newPullRequests(
+      previousPullRequests,
+      activePullRequests,
+    );
+    if (!foundPullRequests) {
+      return;
+    }
+    if (foundPullRequests.length > 0) {
+      console.log('notification time');
+      console.log('old', previousPullRequests);
+      console.log('new', activePullRequests);
+      console.log('found', foundPullRequests);
+    }
+  }, [activePullRequests]);
+
   const {
     isOpen,
     getToggleButtonProps,
@@ -234,7 +316,9 @@ export const Sidebar: FC<Props> = ({
                 isOpen
                 records={trackedRepos.map((repo) => ({
                   name: repo.name,
-                  track: <TrashIcon onClick={() => onTrackedRepoDeleteClick(repo)} />,
+                  track: (
+                    <TrashIcon onClick={() => onTrackedRepoDeleteClick(repo)} />
+                  ),
                 }))}
                 onRecordClick={onRecordClick}
               />
