@@ -75,8 +75,7 @@ export const PRList: FC<PRListProps> = ({
     }
     const pullRequestsWaitingReview = nodes.filter(
       (node) =>
-        // TODO: uncomment after testing
-        // node?.author?.login !== username &&
+        node?.author?.login !== username &&
         !node?.reviews?.nodes
           ?.map((review) => review?.author?.login)
           .includes(username),
