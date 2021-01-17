@@ -59,8 +59,11 @@ export const PRList: FC<PRListProps> = ({
       refetchInterval: GraphQLService.REFETCH_INTERVAL,
       refetchOnMount: false,
       refetchIntervalInBackground: true,
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
     },
   );
+
   useEffect(() => {
     const pullRequestsForRepo = data.data?.viewer.repository?.pullRequests;
     if (!pullRequestsForRepo) {
@@ -72,7 +75,8 @@ export const PRList: FC<PRListProps> = ({
     }
     const pullRequestsWaitingReview = nodes.filter(
       (node) =>
-        node?.author?.login !== username &&
+        // TODO: uncomment after testing
+        // node?.author?.login !== username &&
         !node?.reviews?.nodes
           ?.map((review) => review?.author?.login)
           .includes(username),
@@ -89,8 +93,8 @@ export const PRList: FC<PRListProps> = ({
   }
 
   const onSyncClick = async () => {
-    await queryClient.invalidateQueries(queryKey)
-  }
+    await queryClient.invalidateQueries(queryKey);
+  };
 
   const TableName = () => (
     <span className="pr-title" onClick={() => goToPage(repoUrl + '/pulls')}>
