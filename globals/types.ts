@@ -7,7 +7,17 @@ export enum Message {
   onError = 'onError'
 }
 
-export interface vsCodeData {
+export interface VSCodeData {
   type: Message;
-  value: string;
+  value?: any;
+}
+
+export interface NewPullRequest {
+  author: {
+    login: string;
+    avatarUrl: string;
+  },
+  repoName: string;
+  title: string;
+  url: string;
 }
