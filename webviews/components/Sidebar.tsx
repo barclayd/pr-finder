@@ -10,6 +10,8 @@ import { SearchIcon } from './icons/Search';
 import { TrashIcon } from './icons/Trash';
 import '../styles/sidebar.css';
 import { usePrevious } from '../hooks/usePrevious';
+import { NetworkService } from '../services/NetworkService';
+import { GithubUserOrganisation } from '../../src/types';
 
 interface Props {
   repos: Repo[];
@@ -74,6 +76,8 @@ const newPullRequests = (
   );
 };
 
+const GITHUB_USER_ORGANISATIONS = 'https://api.github.com/user/orgs';
+
 export const Sidebar: FC<Props> = ({
   filteredItems,
   setFilteredItems,
@@ -82,8 +86,12 @@ export const Sidebar: FC<Props> = ({
 }) => {
   const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
   const [openPRList, setOpenPRList] = useState<string | undefined>(undefined);
+  const [userOrganisations, setUserOrganisations] = useState<
+    GithubUserOrganisation[]
+  >([]);
   const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
   const previousPullRequests = usePrevious(activePullRequests);
+  const networkService = new NetworkService(accessToken);
 
   useEffect(() => {
     if (
@@ -106,12 +114,26 @@ export const Sidebar: FC<Props> = ({
     }
   }, [activePullRequests]);
 
+  useEffect(() => {
+    (async () => {
+      if (!accessToken) {
+        return;
+      }
+      const userGithubOrganisations = await networkService.get<
+        GithubUserOrganisation[]
+      >(GITHUB_USER_ORGANISATIONS);
+      if (!userGithubOrganisations) {
+        return;
+      }
+      setUserOrganisations(userGithubOrganisations);
+    })();
+  }, [accessToken]);
+
   const {
     isOpen,
     getToggleButtonProps,
     getLabelProps,
     getMenuProps,
-    openMenu,
     getInputProps,
     getComboboxProps,
     closeMenu,
@@ -269,7 +291,6 @@ export const Sidebar: FC<Props> = ({
                   <input
                     {...getInputProps()}
                     style={{ width: '80%' }}
-                    onFocus={() => openMenu()}
                   />
                 </div>
                 <ul
@@ -301,6 +322,16 @@ export const Sidebar: FC<Props> = ({
                       </li>
                     ))}
                 </ul>
+                {userOrganisations.length > 0 && (
+                  <div>
+                    <label htmlFor="organisations">Search org repos</label>
+                    <select id="organisations">
+                      {userOrganisations.map((organisation) => (
+                        <option>{organisation.login}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </>
             ) : null,
         },

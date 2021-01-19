@@ -12,3 +12,7 @@ interface GithubUserProfile {
     organizations_url: string;
   };
 }
+
+export interface GithubUserOrganisation {
+  login: string;
+}
