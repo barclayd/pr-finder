@@ -118,6 +118,7 @@
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "downshift": "^6.0.11",
     "graphql": "^15.4.0",
     "graphql-request": "^3.4.0",
