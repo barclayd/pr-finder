@@ -88,7 +88,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
   const debounceUserInput = useRef<any>(null);
   const setValidatedUserInput = (downshiftInput: any) => {
     setUserInput(downshiftInput.inputValue);
-  }
+  };
   if (!debounceUserInput.current) {
     debounceUserInput.current = debounce(setValidatedUserInput, 500);
   }
@@ -102,17 +102,10 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
 
   useEffect(() => {
     (async () => {
-      if (
-        !userInput ||
-        userInput.length < 2 ||
-        userInput === '[object Object]'
-      ) {
+      if (!userInput || userInput.length < 2) {
         return;
       }
       const trimmedInput = userInput?.trim();
-      if (typeof trimmedInput !== 'string') {
-        return;
-      }
       await repoSearch(trimmedInput);
     })();
   }, [userInput]);
@@ -187,6 +180,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
   } = useCombobox({
     items: filteredRepos,
     onInputValueChange: debounceUserInput.current,
+    itemToString: (item) => item?.name ?? '',
     onSelectedItemChange: ({ selectedItem: selectedRepo }) => {
       if (!selectedRepo) {
         return;
@@ -198,6 +192,11 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
       closeMenu();
       setInputValue('');
       setTrackedRepos([...trackedRepos, selectedRepo]);
+      setFilteredRepos(
+        filteredRepos.filter(
+          (repo) => repo.name.toLowerCase() !== selectedRepo.name.toLowerCase(),
+        ),
+      );
       setOpenPRList(selectedRepo.name);
     },
   });
