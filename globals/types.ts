@@ -1,6 +1,6 @@
 export enum Message {
   addRepo = 'addRepo',
-  getToken = 'getToken',
+  getGithubUser = 'getGithubUser',
   openBrowser = 'openBrowser',
   newPullRequest = 'newPullRequest',
   onInfo = 'onInfo',
