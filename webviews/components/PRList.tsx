@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react';
-import { getSdk } from '../generated/graphql';
+import { getSdk, OrgPrQuery, PrQuery } from '../generated/graphql';
 import { useQuery, useQueryClient } from 'react-query';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
@@ -10,6 +10,7 @@ import '../styles/PRList.css';
 interface PRListProps {
   accessToken: string | undefined;
   repoName: string;
+  organisation?: string;
   username: string;
   isOpen: boolean;
   onOpenListClick: () => void;
@@ -29,6 +30,10 @@ const formatPRTitle = (title: string) => {
   return `${title.substring(0, 43)}...`;
 };
 
+const isOrgPR = (pr: OrgPrQuery | PrQuery): pr is OrgPrQuery => {
+  return (pr as OrgPrQuery).organization !== undefined;
+};
+
 export const PRList: FC<PRListProps> = ({
   accessToken,
   repoName,
@@ -38,6 +43,7 @@ export const PRList: FC<PRListProps> = ({
   activePullRequests,
   setActivePullRequests,
   repoUrl,
+  organisation,
 }) => {
   const fallback = <></>;
 
@@ -51,9 +57,12 @@ export const PRList: FC<PRListProps> = ({
     return fallback;
   }
   const sdk = getSdk(client);
-  const data = useQuery(
+  const { data: prData} = useQuery(
     queryKey,
-    async () => await sdk.PR({ repo: repoName }),
+    async () =>
+      organisation
+        ? await sdk.OrgPR({ org: organisation, repo: repoName })
+        : await sdk.PR({ repo: repoName }),
     {
       staleTime: GraphQLService.STALE_TIME,
       refetchInterval: GraphQLService.REFETCH_INTERVAL,
@@ -65,7 +74,12 @@ export const PRList: FC<PRListProps> = ({
   );
 
   useEffect(() => {
-    const pullRequestsForRepo = data.data?.viewer.repository?.pullRequests;
+    if (!prData) {
+      return;
+    }
+    const pullRequestsForRepo = isOrgPR(prData)
+      ? prData.organization?.repository?.pullRequests
+      : prData.viewer.repository?.pullRequests;
     if (!pullRequestsForRepo) {
       return;
     }
@@ -85,7 +99,7 @@ export const PRList: FC<PRListProps> = ({
       [repoName]: pullRequestsWaitingReview,
     };
     setActivePullRequests(updatedPullRequests);
-  }, [data.data?.viewer.repository?.pullRequests]);
+  }, [prData]);
 
   if (activePullRequests[repoName as any]?.length === 0) {
     return fallback;
@@ -97,7 +111,7 @@ export const PRList: FC<PRListProps> = ({
 
   const TableName = () => (
     <span className="pr-title" onClick={() => goToPage(repoUrl + '/pulls')}>
-      {repoName}{' '}
+      {repoName.toLowerCase()}{' '}
       <span className="pr-count">
         {`(${activePullRequests[repoName as any]?.length})` ?? ''}
       </span>
