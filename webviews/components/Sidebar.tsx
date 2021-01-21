@@ -82,8 +82,11 @@ const GITHUB_USER_ORGANISATIONS = 'https://api.github.com/user/orgs';
 
 export const Sidebar: FC<Props> = ({ accessToken, username }) => {
   const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
-  const [openPRList, setOpenPRList] = useState<string | undefined>(undefined);
-  const [repoOwner, setRepoOwner] = useState(username);
+  const [openPRList, setOpenPRList] = useState<string | undefined>();
+  const [selectedOrganisation, setSelectedOrganisation] = useState<
+    string | undefined
+  >('bbc');
+  const [searchOrgRepo, setSearchOrgRepo] = useState(false);
   const [userInput, setUserInput] = useState('');
   const debounceUserInput = useRef<any>(null);
   const setValidatedUserInput = (downshiftInput: any) => {
@@ -112,6 +115,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
 
   const repoSearch = async (input: string) => {
     const uriEncodedInput = encodeURIComponent(input);
+    const repoOwner = selectedOrganisation ?? username;
     const data = await networkService.get<GithubSearchResult>(
       searchURL(uriEncodedInput, repoOwner),
     );
@@ -125,10 +129,29 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
         )
         .sort(
           (a, b) =>
-            new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime(),
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
         ) ?? [],
     );
   };
+
+  const clearDropdownOnOrgChange = () => {
+    setFilteredRepos([]);
+    closeMenu();
+    setInputValue('');
+  };
+
+  useEffect(() => {
+    if (!searchOrgRepo) {
+      clearDropdownOnOrgChange();
+      setSelectedOrganisation(undefined);
+      return;
+    }
+    if (userOrganisations.length === 0) {
+      return;
+    }
+    clearDropdownOnOrgChange();
+    setSelectedOrganisation(userOrganisations[0].login);
+  }, [searchOrgRepo]);
 
   useEffect(() => {
     if (
@@ -191,6 +214,9 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
       }
       closeMenu();
       setInputValue('');
+      if (selectedOrganisation) {
+        selectedRepo.organisation = selectedOrganisation;
+      }
       setTrackedRepos([...trackedRepos, selectedRepo]);
       setFilteredRepos(
         filteredRepos.filter(
@@ -258,6 +284,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
                     accessToken={accessToken}
                     repoName={repo.name}
                     repoUrl={repo.html_url}
+                    organisation={repo.organisation}
                     username="barclayd"
                     onOpenListClick={() => onOpenListClick(repo.name)}
                     activePullRequests={activePullRequests}
@@ -271,7 +298,38 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
           name: 'Search',
           content: (
             <>
-              <label {...getLabelProps()}>Find a repo to track</label>
+              <label className="title-label" {...getLabelProps()}>
+                Find a repo to track
+              </label>
+              <div className="organisation-checkbox">
+                <label htmlFor="select-organisation">Search org repos</label>
+                <input
+                  type="checkbox"
+                  id="select-organisation"
+                  onChange={() => setSearchOrgRepo(!searchOrgRepo)}
+                />
+              </div>
+              {searchOrgRepo && userOrganisations.length > 0 && (
+                <>
+                  <label htmlFor="organisations">From</label>
+                  <select
+                    id="organisations"
+                    defaultValue={selectedOrganisation}
+                    onChange={({ target: { value } }) =>
+                      setSelectedOrganisation(value)
+                    }
+                  >
+                    {userOrganisations.map((organisation) => (
+                      <option
+                        value={organisation.login}
+                        key={organisation.login}
+                      >
+                        {organisation.login}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
               <div className="input-wrapper" {...getComboboxProps()}>
                 <button
                   type="button"
@@ -315,23 +373,11 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
                     </li>
                   ))}
               </ul>
-              {userOrganisations.length > 0 && (
-                <div>
-                  <label htmlFor="organisations">Search org repos</label>
-                  <select id="organisations">
-                    {userOrganisations.map((organisation) => (
-                      <option key={organisation.login}>
-                        {organisation.login}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
             </>
           ),
         },
         {
-          name: `Repos ${
+          name: `Tracked Repos ${
             trackedRepos.length > 0 ? `(${trackedRepos.length})` : ''
           }`,
           content:
