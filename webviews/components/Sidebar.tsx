@@ -298,9 +298,11 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
           name: 'Search',
           content: (
             <>
-              <label className="title-label" {...getLabelProps()}>
-                Find a repo to track
-              </label>
+              <div className="title-label">
+                <label {...getLabelProps()}>
+                  Find a repo to track
+                </label>
+              </div>
               <div className="organisation-checkbox">
                 <label htmlFor="select-organisation">Search org repos</label>
                 <input

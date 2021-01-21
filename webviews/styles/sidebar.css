@@ -40,3 +40,13 @@ h3 {
 label {
   color: var(--vscode-descriptionForeground);
 }
+
+.title-label {
+  margin: 5px 0;
+}
+
+.organisation-checkbox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
