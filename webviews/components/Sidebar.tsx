@@ -1,23 +1,22 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Message, NewPullRequest } from '../../globals/types';
 import { useCombobox } from 'downshift';
 import { Table } from './Table';
 import { VSCodeService } from '../services/VSCodeService';
 import { PRList } from './PRList';
 import { Accordion } from './Accordion';
-import { Repo } from './SidebarContainer';
 import { SearchIcon } from './icons/Search';
 import { TrashIcon } from './icons/Trash';
 import '../styles/sidebar.css';
 import { usePrevious } from '../hooks/usePrevious';
 import { NetworkService } from '../services/NetworkService';
 import { GithubUserOrganisation } from '../../src/types';
+import debounce from 'lodash/debounce';
+import { GithubSearchRepo, GithubSearchResult } from '../types';
 
 interface Props {
-  repos: Repo[];
-  accessToken?: string;
-  filteredItems: string[];
-  setFilteredItems: (items: string[]) => void;
+  accessToken: string;
+  username: string;
 }
 
 const pullRequestURLMapForRepo = (pullRequestsForRepo: any[]) =>
@@ -76,22 +75,67 @@ const newPullRequests = (
   );
 };
 
+const searchURL = (searchURI: string, repoOwner: string) =>
+  `https://api.github.com/search/repositories?q=${searchURI}%20in:name,description+org:${repoOwner}&per_page=100`;
+
 const GITHUB_USER_ORGANISATIONS = 'https://api.github.com/user/orgs';
 
-export const Sidebar: FC<Props> = ({
-  filteredItems,
-  setFilteredItems,
-  repos,
-  accessToken,
-}) => {
+export const Sidebar: FC<Props> = ({ accessToken, username }) => {
   const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
   const [openPRList, setOpenPRList] = useState<string | undefined>(undefined);
+  const [repoOwner, setRepoOwner] = useState(username);
+  const [userInput, setUserInput] = useState('');
+  const debounceUserInput = useRef<any>(null);
+  const setValidatedUserInput = (downshiftInput: any) => {
+    setUserInput(downshiftInput.inputValue);
+  }
+  if (!debounceUserInput.current) {
+    debounceUserInput.current = debounce(setValidatedUserInput, 500);
+  }
   const [userOrganisations, setUserOrganisations] = useState<
     GithubUserOrganisation[]
   >([]);
-  const [trackedRepos, setTrackedRepos] = useState<Repo[]>([]);
+  const [trackedRepos, setTrackedRepos] = useState<GithubSearchRepo[]>([]);
+  const [filteredRepos, setFilteredRepos] = useState<GithubSearchRepo[]>([]);
   const previousPullRequests = usePrevious(activePullRequests);
   const networkService = new NetworkService(accessToken);
+
+  useEffect(() => {
+    (async () => {
+      if (
+        !userInput ||
+        userInput.length < 2 ||
+        userInput === '[object Object]'
+      ) {
+        return;
+      }
+      const trimmedInput = userInput?.trim();
+      if (typeof trimmedInput !== 'string') {
+        return;
+      }
+      await repoSearch(trimmedInput);
+    })();
+  }, [userInput]);
+
+  const repoSearch = async (input: string) => {
+    const uriEncodedInput = encodeURIComponent(input);
+    const data = await networkService.get<GithubSearchResult>(
+      searchURL(uriEncodedInput, repoOwner),
+    );
+    const alreadySelectedRepos = trackedRepos.map((repo) =>
+      repo.name.toLowerCase(),
+    );
+    setFilteredRepos(
+      data?.items
+        .filter(
+          (repo) => !alreadySelectedRepos.includes(repo.name.toLowerCase()),
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime(),
+        ) ?? [],
+    );
+  };
 
   useEffect(() => {
     if (
@@ -141,70 +185,20 @@ export const Sidebar: FC<Props> = ({
     setInputValue,
     getItemProps,
   } = useCombobox({
-    items: filteredItems,
-    onIsOpenChange: ({ isOpen }) => {
-      if (isOpen) {
-        setFilteredItems(
-          repos
-            .map((repo) => repo.name)
-            .filter(
-              (repo) =>
-                !trackedRepos
-                  .map((repo) => repo.name.toLowerCase())
-                  .includes(repo.toLowerCase()),
-            ),
-        );
-      }
-    },
-    onInputValueChange: ({ inputValue }) => {
-      if (!inputValue) {
+    items: filteredRepos,
+    onInputValueChange: debounceUserInput.current,
+    onSelectedItemChange: ({ selectedItem: selectedRepo }) => {
+      if (!selectedRepo) {
         return;
       }
-      setFilteredItems(
-        repos
-          .filter((repo) => {
-            if (
-              trackedRepos
-                .map((trackedRepo) => trackedRepo.name.toLowerCase())
-                .includes(repo.name.toLowerCase())
-            ) {
-              return false;
-            }
-            if (
-              repo.name.toLowerCase().includes(inputValue?.toLowerCase()) ||
-              repo.name
-                .replace('-', ' ')
-                .toLowerCase()
-                .includes(inputValue?.toLowerCase())
-            ) {
-              return true;
-            }
-          })
-          .map((repo) => repo.name),
-      );
-    },
-    onSelectedItemChange: ({ selectedItem }) => {
-      if (!selectedItem) {
+      const repoAlreadyTracked = findRepoByName(selectedRepo.name);
+      if (repoAlreadyTracked) {
         return;
       }
-      const repo = findRepoByName(selectedItem);
-      if (!repo) {
-        return;
-      }
+      closeMenu();
       setInputValue('');
-      if (!trackedRepos.includes(repo)) {
-        setTrackedRepos([...trackedRepos, repo]);
-        closeMenu();
-        setOpenPRList(repo.name);
-        setFilteredItems(
-          repos
-            .filter(
-              (trackedRepo) =>
-                trackedRepo.name.toLowerCase() !== selectedItem.toLowerCase(),
-            )
-            .map((repo) => repo.name),
-        );
-      }
+      setTrackedRepos([...trackedRepos, selectedRepo]);
+      setOpenPRList(selectedRepo.name);
     },
   });
 
@@ -219,14 +213,18 @@ export const Sidebar: FC<Props> = ({
     return count > 0 ? `(${count})` : 0;
   };
 
-  const findRepoByName = (name: string): Repo | undefined => {
-    return repos.find((repo) => repo.name === name);
+  const findRepoByName = (name: string): GithubSearchRepo | undefined => {
+    return trackedRepos.find(
+      (repo) => repo.name.toLowerCase() === name.toLowerCase(),
+    );
   };
 
-  const onTrackedRepoDeleteClick = (clickedRepo: Repo) => {
+  const onTrackedRepoDeleteClick = (clickedRepo: GithubSearchRepo) => {
     setTrackedRepos(trackedRepos.filter((repo) => repo !== clickedRepo));
     const updatedPullRequests = activePullRequests;
-    delete updatedPullRequests[clickedRepo.name as any];
+    delete updatedPullRequests[
+      clickedRepo.name as keyof typeof updatedPullRequests
+    ];
     setActivePullRequests(updatedPullRequests);
   };
 
@@ -237,13 +235,13 @@ export const Sidebar: FC<Props> = ({
   };
 
   const onRecordClick = ({ name }: { name: string; track: JSX.Element }) => {
-    const repo = repos.find(
+    const repo = trackedRepos.find(
       (repo) => repo.name.toLowerCase() === name.toLowerCase(),
     );
     if (!repo) {
       return;
     }
-    VSCodeService.sendMessage(Message.openBrowser, `${repo.url}/pulls`);
+    VSCodeService.sendMessage(Message.openBrowser, `${repo.html_url}/pulls`);
   };
 
   return (
@@ -260,7 +258,7 @@ export const Sidebar: FC<Props> = ({
                     isOpen={openPRList === repo.name}
                     accessToken={accessToken}
                     repoName={repo.name}
-                    repoUrl={repo.url}
+                    repoUrl={repo.html_url}
                     username="barclayd"
                     onOpenListClick={() => onOpenListClick(repo.name)}
                     activePullRequests={activePullRequests}
@@ -272,68 +270,66 @@ export const Sidebar: FC<Props> = ({
         },
         {
           name: 'Search',
-          content:
-            repos.length > 0 ? (
-              <>
-                <label {...getLabelProps()}>Find a repo to track</label>
-                <div className="input-wrapper" {...getComboboxProps()}>
-                  <button
-                    type="button"
-                    className="search-button"
-                    {...getToggleButtonProps()}
-                    aria-label="toggle menu"
-                    style={{
-                      width: '20%',
-                    }}
-                  >
-                    <SearchIcon />
-                  </button>
-                  <input
-                    {...getInputProps()}
-                    style={{ width: '80%' }}
-                  />
-                </div>
-                <ul
-                  {...getMenuProps()}
+          content: (
+            <>
+              <label {...getLabelProps()}>Find a repo to track</label>
+              <div className="input-wrapper" {...getComboboxProps()}>
+                <button
+                  type="button"
+                  className="search-button"
+                  {...getToggleButtonProps()}
+                  aria-label="toggle menu"
                   style={{
-                    maxHeight: 80,
-                    maxWidth: 300,
-                    overflowY: 'scroll',
-                    backgroundColor: 'var(--vscode-button-secondaryBackground)',
-                    color: 'var(--vscode-button-secondaryForeground)',
-                    padding: 0,
-                    listStyle: 'none',
-                    position: 'relative',
+                    width: '20%',
                   }}
                 >
-                  {isOpen &&
-                    filteredItems.map((item, index) => (
-                      <li
-                        className="dropdown-list-item"
-                        style={
-                          highlightedIndex === index
-                            ? { backgroundColor: '#bde4ff' }
-                            : {}
-                        }
-                        key={`${item}${index}`}
-                        {...getItemProps({ item, index })}
-                      >
-                        {item}
-                      </li>
+                  <SearchIcon />
+                </button>
+                <input {...getInputProps()} style={{ width: '80%' }} />
+              </div>
+              <ul
+                {...getMenuProps()}
+                style={{
+                  maxHeight: 80,
+                  maxWidth: 300,
+                  overflowY: 'scroll',
+                  backgroundColor: 'var(--vscode-button-secondaryBackground)',
+                  color: 'var(--vscode-button-secondaryForeground)',
+                  padding: 0,
+                  listStyle: 'none',
+                  position: 'relative',
+                }}
+              >
+                {isOpen &&
+                  filteredRepos.map((item, index) => (
+                    <li
+                      className="dropdown-list-item"
+                      style={
+                        highlightedIndex === index
+                          ? { backgroundColor: '#bde4ff' }
+                          : {}
+                      }
+                      key={`${item}${index}`}
+                      {...getItemProps({ item, index })}
+                    >
+                      {item.name}
+                    </li>
+                  ))}
+              </ul>
+              {userOrganisations.length > 0 && (
+                <div>
+                  <label htmlFor="organisations">Search org repos</label>
+                  <select id="organisations">
+                    {userOrganisations.map((organisation) => (
+                      <option key={organisation.login}>
+                        {organisation.login}
+                      </option>
                     ))}
-                </ul>
-                {userOrganisations.length > 0 && (
-                  <div>
-                    <label htmlFor="organisations">Search org repos</label>
-                    <select id="organisations">
-                      {userOrganisations.map((organisation) => (
-                        <option>{organisation.login}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </>
-            ) : null,
+                  </select>
+                </div>
+              )}
+            </>
+          ),
         },
         {
           name: `Repos ${
