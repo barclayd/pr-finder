@@ -17,6 +17,7 @@ export function activate({
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   const authService = new AuthService(globalState);
   console.log(`token success: ${authService.getToken()}`);
+  console.log(`user success: ${authService.getGithubUser()}`);
   const sidebar = new Sidebar(extensionUri, authService);
   subscriptions.push(
     vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 export class AuthService {
   static TOKEN_KEY = 'TOKEN_KEY';
+  static GITHUB_USER = 'GITHUB_USER';
 
   constructor(private globalState: vscode.Memento) {}
 
@@ -19,5 +20,13 @@ export class AuthService {
 
   public getToken() {
     return this.readState(AuthService.TOKEN_KEY);
+  }
+
+  public async setGithubUser(user: string) {
+    await this.updateState(AuthService.GITHUB_USER, user);
+  }
+
+  public getGithubUser() {
+    return this.readState(AuthService.GITHUB_USER);
   }
 }

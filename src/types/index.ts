@@ -1,5 +1,4 @@
-export interface GithubUser {
-  profile: GithubUserProfile;
+export interface GithubUser extends GithubUserProfile{
   accessToken: string;
 }
 
