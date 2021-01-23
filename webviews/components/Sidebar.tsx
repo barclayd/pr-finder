@@ -93,7 +93,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     setUserInput(downshiftInput.inputValue);
   };
   if (!debounceUserInput.current) {
-    debounceUserInput.current = debounce(setValidatedUserInput, 500);
+    debounceUserInput.current = debounce(setValidatedUserInput, 300);
   }
   const [userOrganisations, setUserOrganisations] = useState<
     GithubUserOrganisation[]
@@ -304,15 +304,16 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
                 </label>
               </div>
               <div className="organisation-checkbox">
-                <label htmlFor="select-organisation">Search org repos</label>
                 <input
+                  className="select-checkbox"
                   type="checkbox"
                   id="select-organisation"
                   onChange={() => setSearchOrgRepo(!searchOrgRepo)}
                 />
+                <label htmlFor="select-organisation">Search org repos</label>
               </div>
               {searchOrgRepo && userOrganisations.length > 0 && (
-                <>
+                <div className="user-organisations">
                   <label htmlFor="organisations">From</label>
                   <select
                     id="organisations"
@@ -330,7 +331,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
                       </option>
                     ))}
                   </select>
-                </>
+                </div>
               )}
               <div className="input-wrapper" {...getComboboxProps()}>
                 <button
