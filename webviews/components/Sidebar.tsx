@@ -13,8 +13,8 @@ import { GithubUserOrganisation } from '../../src/types';
 import debounce from 'lodash/debounce';
 import { GithubSearchRepo, GithubSearchResult } from '../types';
 import { useAsyncEffect } from '../hooks/useAsyncEffect';
-import '../styles/sidebar.css';
 import { CloseIcon } from './icons/CloseIcon';
+import '../styles/sidebar.css';
 
 interface Props {
   accessToken: string;
@@ -321,12 +321,9 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
             ) : null,
         },
         {
-          name: 'Search',
+          name: 'Search Repos',
           content: (
             <>
-              <div className="title-label">
-                <label {...getLabelProps()}>Find a repo to track</label>
-              </div>
               <div className="organisation-checkbox">
                 <input
                   className="select-checkbox"
@@ -352,7 +349,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
               )}
               {searchOrgRepo && userOrganisations.length > 0 && (
                 <div className="user-organisations">
-                  <label htmlFor="organisations">From</label>
+                  <label htmlFor="organisations">From: </label>
                   <select
                     id="organisations"
                     defaultValue={selectedOrganisation}

@@ -41,10 +41,6 @@ label {
   color: var(--vscode-descriptionForeground);
 }
 
-.title-label {
-  margin: 5px 0;
-}
-
 .organisation-checkbox {
   display: flex;
   justify-content: space-between;
@@ -71,7 +67,7 @@ label {
 .select-checkbox + label:before {
   content: '';
   display: inline-block;
-  vertical-align: text-bottom;
+  vertical-align: middle;
   margin-right: 10px;
   width: 20px;
   height: 20px;
@@ -110,7 +106,7 @@ label {
   font-size: 0.8rem;
   color: var(--vscode-descriptionForeground);
   padding: 10px;
-  grid-gap: 5px;
+  grid-row-gap: 7px;
   background: var(--vscode-input-background);
   margin: 10px 0;
 }
@@ -120,15 +116,20 @@ label {
 }
 
 .fa-close {
-  width: 17px;
+  width: 12px;
   color: var(--vscode-list-deemphasizedForeground);
 }
 
 .organisation-prompt-title {
   grid-area: title;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 3fr 0.5fr;
+}
+
+.organisation-prompt-title > svg {
+  justify-self: center;
+  align-self: center;
 }
 
 .organisation-prompt {
@@ -141,4 +142,15 @@ label {
 
 .fa-close:hover {
   filter: brightness(120%);
+}
+
+.user-organisations, .organisation-checkbox {
+  margin: 5px 0;
+}
+
+select#organisations {
+  color: var(--vscode-list-deemphasizedForeground);
+  background: var(--vscode-button-background);
+  border: none;
+  padding: 2px 5px;
 }
