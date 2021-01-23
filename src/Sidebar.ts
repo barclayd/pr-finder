@@ -26,10 +26,13 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (data: VSCodeData) => {
       switch (data.type) {
-        case Message.getToken: {
+        case Message.getGithubUser: {
           webviewView.webview.postMessage({
-            type: Message.getToken,
-            value: this.authService.getToken(),
+            type: Message.getGithubUser,
+            value: {
+              token: this.authService.getToken(),
+              user: this.authService.getGithubUser(),
+            },
           });
           break;
         }

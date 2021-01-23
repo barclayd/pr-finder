@@ -40,3 +40,117 @@ h3 {
 label {
   color: var(--vscode-descriptionForeground);
 }
+
+.organisation-checkbox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-organisations {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.select-checkbox {
+  position: absolute;
+  opacity: 0;
+}
+
+.select-checkbox + label {
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+}
+
+.select-checkbox + label:before {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  background: var(--vscode-button-background);
+}
+
+.select-checkbox:hover + label:before {
+  filter: brightness(120%);
+}
+
+.select-checkbox:checked + label:after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 9px;
+  background: var(--vscode-descriptionForeground);
+  width: 2px;
+  height: 2px;
+  box-shadow: 2px 0 0 var(--vscode-descriptionForeground),
+    4px 0 0 var(--vscode-descriptionForeground),
+    4px -2px 0 var(--vscode-descriptionForeground),
+    4px -4px 0 var(--vscode-descriptionForeground),
+    4px -6px 0 var(--vscode-descriptionForeground),
+    4px -8px 0 var(--vscode-descriptionForeground);
+  transform: rotate(45deg);
+}
+
+.all-organisations-prompt {
+  display: grid;
+  grid-template-areas:
+    'title'
+    'prompt';
+  grid-template-rows: auto;
+  justify-items: center;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--vscode-descriptionForeground);
+  padding: 10px;
+  grid-row-gap: 7px;
+  background: var(--vscode-input-background);
+  margin: 10px 0;
+}
+
+.all-organisations-prompt > div > span:first-child {
+  color: var(--vscode-inputValidation-infoBorder);
+}
+
+.fa-close {
+  width: 12px;
+  color: var(--vscode-list-deemphasizedForeground);
+}
+
+.organisation-prompt-title {
+  grid-area: title;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 3fr 0.5fr;
+}
+
+.organisation-prompt-title > svg {
+  justify-self: center;
+  align-self: center;
+}
+
+.organisation-prompt {
+  grid-area: prompt;
+}
+
+.fa-close {
+  cursor: pointer;
+}
+
+.fa-close:hover {
+  filter: brightness(120%);
+}
+
+.user-organisations, .organisation-checkbox {
+  margin: 5px 0;
+}
+
+select#organisations {
+  color: var(--vscode-list-deemphasizedForeground);
+  background: var(--vscode-button-background);
+  border: none;
+  padding: 2px 5px;
+}

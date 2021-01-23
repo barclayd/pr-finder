@@ -1,7 +1,7 @@
 .accordion {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .tab {
@@ -31,7 +31,7 @@
   text-align: center;
   transition: all 0.35s;
   margin-right: 3px;
-  color: var(--vscode-descriptionForeground);;
+  color: var(--vscode-descriptionForeground);
   font-weight: lighter;
 }
 
@@ -42,19 +42,19 @@
   background-color: var(--vscode-editor-background);
 }
 
-input[type="checkbox"] {
+input[type="checkbox"].accordion-input {
   position: absolute;
   opacity: 0;
   z-index: -1;
   margin: 0;
 }
 
-input[type="checkbox"]:checked ~ .tab-content {
+input[type="checkbox"]:checked.accordion-input ~ .tab-content {
   max-height: 100vh;
   padding: 0.25em 0;
 }
 
-input[type="checkbox"]:checked + .tab-label::before {
+input[type="checkbox"]:checked.accordion-input + .tab-label::before {
   transform: rotate(90deg);
   margin-top: 2px;
 }

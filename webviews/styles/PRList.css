@@ -11,6 +11,7 @@ img {
   grid-template-columns: 75% 20%;
   grid-gap: 5px;
   align-items: center;
+  width: 100%;
 }
 
 .title-wrapper > div {

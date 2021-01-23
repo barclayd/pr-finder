@@ -38,8 +38,8 @@ export const authenticate = (authService: AuthService) => {
       return;
     }
     await authService.setToken(githubData.accessToken);
+    await authService.setGithubUser(githubData.username);
     res.end('<h1>Successfully authenticated. You can close this now</h1>');
-    console.log('token ' + authService.getToken());
     app.server?.close();
   });
   app.listen(PORT, (error: Error | undefined) => {
