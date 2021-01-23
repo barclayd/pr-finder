@@ -7,12 +7,13 @@ import { PRList } from './PRList';
 import { Accordion } from './Accordion';
 import { SearchIcon } from './icons/Search';
 import { TrashIcon } from './icons/Trash';
-import '../styles/sidebar.css';
 import { usePrevious } from '../hooks/usePrevious';
 import { NetworkService } from '../services/NetworkService';
 import { GithubUserOrganisation } from '../../src/types';
 import debounce from 'lodash/debounce';
 import { GithubSearchRepo, GithubSearchResult } from '../types';
+import { useAsyncEffect } from '../hooks/useAsyncEffect';
+import '../styles/sidebar.css';
 
 interface Props {
   accessToken: string;
@@ -103,14 +104,15 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
   const previousPullRequests = usePrevious(activePullRequests);
   const networkService = new NetworkService(accessToken);
 
-  useEffect(() => {
-    (async () => {
-      if (!userInput || userInput.length < 2) {
-        return;
-      }
-      const trimmedInput = userInput?.trim();
-      await repoSearch(trimmedInput);
-    })();
+  const ALL_GITHUB_USER_ORGANISATIONS_URL = `https://api.github.com/users/${username}/orgs`;
+  let allUserOrganisations: GithubUserOrganisation[] = [];
+
+  useAsyncEffect(async () => {
+    if (!userInput || userInput.length < 2) {
+      return;
+    }
+    const trimmedInput = userInput?.trim();
+    await repoSearch(trimmedInput);
   }, [userInput]);
 
   const repoSearch = async (input: string) => {
@@ -153,6 +155,13 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     setSelectedOrganisation(userOrganisations[0].login);
   }, [searchOrgRepo]);
 
+  useAsyncEffect(async () => {
+    allUserOrganisations =
+      (await networkService.get<GithubUserOrganisation[]>(
+        ALL_GITHUB_USER_ORGANISATIONS_URL,
+      )) ?? [];
+  }, []);
+
   useEffect(() => {
     if (
       previousPullRequests === undefined ||
@@ -174,19 +183,17 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     }
   }, [activePullRequests]);
 
-  useEffect(() => {
-    (async () => {
-      if (!accessToken) {
-        return;
-      }
-      const userGithubOrganisations = await networkService.get<
-        GithubUserOrganisation[]
+  useAsyncEffect(async () => {
+    if (!accessToken) {
+      return;
+    }
+    const userGithubOrganisations = await networkService.get<
+      GithubUserOrganisation[]
       >(GITHUB_USER_ORGANISATIONS);
-      if (!userGithubOrganisations) {
-        return;
-      }
-      setUserOrganisations(userGithubOrganisations);
-    })();
+    if (!userGithubOrganisations) {
+      return;
+    }
+    setUserOrganisations(userGithubOrganisations);
   }, [accessToken]);
 
   const {
@@ -269,6 +276,9 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     VSCodeService.sendMessage(Message.openBrowser, `${repo.html_url}/pulls`);
   };
 
+  const areRestrictedOrganisations =
+    userOrganisations.length !== allUserOrganisations.length;
+
   return (
     <Accordion
       content={[
@@ -299,9 +309,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
           content: (
             <>
               <div className="title-label">
-                <label {...getLabelProps()}>
-                  Find a repo to track
-                </label>
+                <label {...getLabelProps()}>Find a repo to track</label>
               </div>
               <div className="organisation-checkbox">
                 <input
@@ -312,6 +320,12 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
                 />
                 <label htmlFor="select-organisation">Search org repos</label>
               </div>
+              {searchOrgRepo && areRestrictedOrganisations && (
+                <div>
+                  Can't find the org you were looking for? Ask org owners to
+                  adjust permissions to allow PR Finder to view them
+                </div>
+              )}
               {searchOrgRepo && userOrganisations.length > 0 && (
                 <div className="user-organisations">
                   <label htmlFor="organisations">From</label>

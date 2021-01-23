@@ -71,7 +71,7 @@ label {
 .select-checkbox + label:before {
   content: '';
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: text-bottom;
   margin-right: 10px;
   width: 20px;
   height: 20px;
