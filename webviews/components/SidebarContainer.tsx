@@ -19,7 +19,6 @@ export const SidebarContainer = () => {
           console.log(message);
           break;
         case Message.getGithubUser:
-          console.log(message);
           const { user, token }: GithubUser = message.value;
           setAccessToken(token);
           setGithubUsername(user);
