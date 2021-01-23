@@ -5,8 +5,8 @@ import { Table } from './Table';
 import { VSCodeService } from '../services/VSCodeService';
 import { PRList } from './PRList';
 import { Accordion } from './Accordion';
-import { SearchIcon } from './icons/Search';
-import { TrashIcon } from './icons/Trash';
+import { SearchIcon } from './icons/SearchIcon';
+import { TrashIcon } from './icons/TrashIcon';
 import { usePrevious } from '../hooks/usePrevious';
 import { NetworkService } from '../services/NetworkService';
 import { GithubUserOrganisation } from '../../src/types';
@@ -14,6 +14,7 @@ import debounce from 'lodash/debounce';
 import { GithubSearchRepo, GithubSearchResult } from '../types';
 import { useAsyncEffect } from '../hooks/useAsyncEffect';
 import '../styles/sidebar.css';
+import { CloseIcon } from './icons/CloseIcon';
 
 interface Props {
   accessToken: string;
@@ -88,6 +89,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     string | undefined
   >('bbc');
   const [searchOrgRepo, setSearchOrgRepo] = useState(false);
+  const [showRestrictionPrompt, setShowRestrictionPrompt] = useState(false);
   const [userInput, setUserInput] = useState('');
   const debounceUserInput = useRef<any>(null);
   const setValidatedUserInput = (downshiftInput: any) => {
@@ -109,6 +111,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
 
   useAsyncEffect(async () => {
     if (!userInput || userInput.length < 2) {
+      setFilteredRepos([]);
       return;
     }
     const trimmedInput = userInput?.trim();
@@ -142,6 +145,13 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     setInputValue('');
   };
 
+  const openDropdown = () => {
+    if (inputValue.trim().length === 0) {
+      return;
+    }
+    openMenu();
+  };
+
   useEffect(() => {
     if (!searchOrgRepo) {
       clearDropdownOnOrgChange();
@@ -160,6 +170,9 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
       (await networkService.get<GithubUserOrganisation[]>(
         ALL_GITHUB_USER_ORGANISATIONS_URL,
       )) ?? [];
+    if (userOrganisations.length !== allUserOrganisations.length) {
+      setShowRestrictionPrompt(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -189,7 +202,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     }
     const userGithubOrganisations = await networkService.get<
       GithubUserOrganisation[]
-      >(GITHUB_USER_ORGANISATIONS);
+    >(GITHUB_USER_ORGANISATIONS);
     if (!userGithubOrganisations) {
       return;
     }
@@ -203,6 +216,8 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     getMenuProps,
     getInputProps,
     getComboboxProps,
+    inputValue,
+    openMenu,
     closeMenu,
     highlightedIndex,
     setInputValue,
@@ -251,6 +266,10 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     );
   };
 
+  const hideShowOrganisationRestrictionPrompt = () => {
+    setShowRestrictionPrompt(false);
+  };
+
   const onTrackedRepoDeleteClick = (clickedRepo: GithubSearchRepo) => {
     setTrackedRepos(trackedRepos.filter((repo) => repo !== clickedRepo));
     const updatedPullRequests = activePullRequests;
@@ -275,9 +294,6 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     }
     VSCodeService.sendMessage(Message.openBrowser, `${repo.html_url}/pulls`);
   };
-
-  const areRestrictedOrganisations =
-    userOrganisations.length !== allUserOrganisations.length;
 
   return (
     <Accordion
@@ -320,10 +336,18 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
                 />
                 <label htmlFor="select-organisation">Search org repos</label>
               </div>
-              {searchOrgRepo && areRestrictedOrganisations && (
-                <div>
-                  Can't find the org you were looking for? Ask org owners to
-                  adjust permissions to allow PR Finder to view them
+              {searchOrgRepo && showRestrictionPrompt && (
+                <div className="all-organisations-prompt">
+                  <div className="organisation-prompt-title">
+                    <span>Can't find the org you were looking for?</span>
+                    <CloseIcon
+                      onClick={hideShowOrganisationRestrictionPrompt}
+                    />
+                  </div>
+                  <span className="organisation-prompt">
+                    Request permission from org owner to allow PR Finder to view
+                    them
+                  </span>
                 </div>
               )}
               {searchOrgRepo && userOrganisations.length > 0 && (
@@ -359,7 +383,11 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
                 >
                   <SearchIcon />
                 </button>
-                <input {...getInputProps()} style={{ width: '80%' }} />
+                <input
+                  {...getInputProps()}
+                  onFocus={() => openDropdown()}
+                  style={{ width: '80%' }}
+                />
               </div>
               <ul
                 {...getMenuProps()}
