@@ -25,6 +25,7 @@
 
 .content-table thead th {
   font-weight: normal;
+  text-transform: lowercase;
 }
 
 .content-table th,
