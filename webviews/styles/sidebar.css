@@ -35,6 +35,7 @@ h3 {
 
 .dropdown-list-item {
   cursor: pointer;
+  padding: 3px;
 }
 
 label {
@@ -153,4 +154,9 @@ select#organisations {
   background: var(--vscode-button-background);
   border: none;
   padding: 2px 5px;
+}
+
+.disabled-list-item {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
