@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { getNonce } from './scriptLimiter';
 import { Message, NewPullRequest, VSCodeData } from '../globals/types';
 import { AuthService } from './services/AuthService';
+import { authenticate } from './authenticate';
 
 export class Sidebar implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -64,6 +65,10 @@ export class Sidebar implements vscode.WebviewViewProvider {
             );
           }
           break;
+        }
+        case Message.onLogin: {
+          authenticate(this.authService);
+          return;
         }
         case Message.onInfo: {
           if (!data.value) {

@@ -7,7 +7,7 @@ import css from 'rollup-plugin-css-only';
 import fs from 'fs';
 import path from 'path';
 
-const production = !process.env.ROLLUP_WATCH ?? false;
+const production = !process.env.ROLLUP_WATCH || false;
 
 export default fs
   .readdirSync(path.join(__dirname, 'webviews', 'pages'))

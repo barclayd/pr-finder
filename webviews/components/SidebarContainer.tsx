@@ -22,6 +22,9 @@ export const SidebarContainer = () => {
           const { user, token }: GithubUser = message.value;
           setAccessToken(token);
           setGithubUsername(user);
+          if (!token || !user) {
+            VSCodeService.sendMessage(Message.onLogin);
+          }
           client = new GraphQLService(message.value).client;
       }
     });
