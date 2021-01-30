@@ -104,7 +104,7 @@ label {
   grid-template-rows: auto;
   justify-items: center;
   align-items: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--vscode-descriptionForeground);
   padding: 10px;
   grid-row-gap: 7px;

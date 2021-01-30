@@ -6,9 +6,14 @@ import { VSCodeService } from '../services/VSCodeService';
 import { Sidebar } from './Sidebar';
 import { GithubUser } from '../types';
 
+type UserOnServer = 'fetching' | 'found' | 'notFound';
+
 export const SidebarContainer = () => {
   let client: GraphQLClient | undefined;
   const [accessToken, setAccessToken] = useState<string | undefined>();
+  const [userOnServer, setUserOnServerStatus] = useState<UserOnServer>(
+    'fetching',
+  );
   const [githubUsername, setGithubUsername] = useState<string | undefined>();
 
   useEffect(() => {
@@ -23,8 +28,10 @@ export const SidebarContainer = () => {
           setAccessToken(token);
           setGithubUsername(user);
           if (!token || !user) {
-            VSCodeService.sendMessage(Message.onLogin);
+            setUserOnServerStatus('notFound');
+            return;
           }
+          setUserOnServerStatus('found');
           client = new GraphQLService(message.value).client;
       }
     });
@@ -32,8 +39,15 @@ export const SidebarContainer = () => {
     VSCodeService.sendMessage(Message.getGithubUser);
   }, []);
 
-  if (!accessToken || !githubUsername) {
+  const onLoginClick = () => {
+    VSCodeService.sendMessage(Message.onLogin);
+  };
+
+  if (!accessToken || (!githubUsername && userOnServer === 'fetching')) {
     return <div>Loading...</div>;
+  }
+  if (!accessToken || !githubUsername || userOnServer === 'notFound') {
+    return <button onClick={onLoginClick}>Login with Github</button>;
   }
   return <Sidebar accessToken={accessToken} username={githubUsername} />;
 };
