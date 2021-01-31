@@ -1,12 +1,20 @@
 import { FC } from 'react';
-import { VSCodeService } from '../services/VSCodeService';
 import { Message } from '../../globals/types';
-
-const onLogoutClick = () => {
-  VSCodeService.sendMessage(Message.onLogin);
-};
+import { useAuthContext } from '../hooks/useAuthContext';
+import { VSCodeService } from '../services/VSCodeService';
 
 export const Settings: FC = () => {
+  const { setAuthState } = useAuthContext();
+
+  const onLogoutClick = () => {
+    VSCodeService.sendMessage(Message.onLogout);
+    setAuthState({
+      accessToken: undefined,
+      githubUsername: undefined,
+      userOnServerStatus: 'notFound',
+    });
+  };
+
   return (
     <>
       <button onClick={onLogoutClick}>Logout</button>

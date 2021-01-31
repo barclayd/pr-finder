@@ -21,7 +21,6 @@ export const SidebarContainer = () => {
 
   useEffect(() => {
     window.addEventListener('message', (event) => {
-      console.log('got a message', event.data);
       const message: VSCodeData = event.data;
       switch (message.type) {
         case Message.addRepo:

@@ -1,11 +1,11 @@
+import '../styles/PRList.css';
 import { FC, useEffect } from 'react';
-import { getSdk, OrgPrQuery, PrQuery } from '../generated/graphql';
 import { useQuery, useQueryClient } from 'react-query';
+import { Message } from '../../globals/types';
+import { getSdk,OrgPrQuery, PrQuery } from '../generated/graphql';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
-import { Message } from '../../globals/types';
 import { Table } from './Table';
-import '../styles/PRList.css';
 
 interface PRListProps {
   accessToken: string | undefined;
