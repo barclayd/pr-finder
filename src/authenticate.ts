@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
+import { ServerResponse } from 'http';
 import * as polka from 'polka';
+import * as vscode from 'vscode';
 import { api } from '../package.json';
 import { AuthService } from './services/AuthService';
-import { ServerResponse } from 'http';
 import { GithubUser } from './types';
 
 const PORT = 54321;
@@ -20,7 +20,10 @@ const onError = (res: ServerResponse) => {
   res.end('<h1>Something went wrong</h1>');
 };
 
-export const authenticate = (authService: AuthService) => {
+export const authenticate = (
+  authService: AuthService,
+  onSuccess?: () => void,
+) => {
   const app = polka();
   app.get('/auth/:userData', async (req, res) => {
     const userData: string | undefined = req.params.userData;
@@ -39,6 +42,9 @@ export const authenticate = (authService: AuthService) => {
     }
     await authService.setToken(githubData.accessToken);
     await authService.setGithubUser(githubData.username);
+    if (onSuccess) {
+      onSuccess();
+    }
     res.end('<h1>Successfully authenticated. You can close this now</h1>');
     app.server?.close();
   });
