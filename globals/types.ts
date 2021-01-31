@@ -4,7 +4,9 @@ export enum Message {
   openBrowser = 'openBrowser',
   newPullRequest = 'newPullRequest',
   onInfo = 'onInfo',
-  onError = 'onError'
+  onLogin = 'onLogin',
+  onLogout = 'onLogout',
+  onError = 'onError',
 }
 
 export interface VSCodeData {
@@ -16,7 +18,7 @@ export interface NewPullRequest {
   author: {
     login: string;
     avatarUrl: string;
-  },
+  };
   repoName: string;
   title: string;
   url: string;

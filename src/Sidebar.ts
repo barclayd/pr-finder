@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
-import { getNonce } from './scriptLimiter';
 import { Message, NewPullRequest, VSCodeData } from '../globals/types';
+import { authenticate } from './authenticate';
+import { getNonce } from './scriptLimiter';
 import { AuthService } from './services/AuthService';
 
 export class Sidebar implements vscode.WebviewViewProvider {
@@ -24,16 +25,19 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
+    const sendUserInfoMessage = () =>
+      webviewView.webview.postMessage({
+        type: Message.getGithubUser,
+        value: {
+          token: this.authService.getToken(),
+          user: this.authService.getGithubUser(),
+        },
+      });
+
     webviewView.webview.onDidReceiveMessage(async (data: VSCodeData) => {
       switch (data.type) {
         case Message.getGithubUser: {
-          webviewView.webview.postMessage({
-            type: Message.getGithubUser,
-            value: {
-              token: this.authService.getToken(),
-              user: this.authService.getGithubUser(),
-            },
-          });
+          sendUserInfoMessage();
           break;
         }
         case Message.openBrowser: {
@@ -64,6 +68,13 @@ export class Sidebar implements vscode.WebviewViewProvider {
             );
           }
           break;
+        }
+        case Message.onLogin: {
+          authenticate(this.authService, sendUserInfoMessage);
+          return;
+        }
+        case Message.onLogout: {
+          return await this.authService.resetAuthState();
         }
         case Message.onInfo: {
           if (!data.value) {

@@ -14,3 +14,17 @@ export interface GithubUser {
   token?: string;
   user?: string;
 }
+
+export type Auth = {
+  accessToken?: string;
+  githubUsername?: string;
+  userOnServerStatus?: string;
+};
+
+export type AuthValue = {
+  [key in keyof Auth]: string | undefined;
+};
+
+export interface AuthState extends Auth {
+  setAuthState: (newState: AuthValue) => void;
+}

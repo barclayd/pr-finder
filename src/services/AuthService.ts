@@ -14,6 +14,10 @@ export class AuthService {
     return this.globalState.get<string>(key);
   }
 
+  private resetState(key: string) {
+    return this.globalState.update(key, '');
+  }
+
   public async setToken(token: string) {
     await this.updateState(AuthService.TOKEN_KEY, token);
   }
@@ -28,5 +32,10 @@ export class AuthService {
 
   public getGithubUser() {
     return this.readState(AuthService.GITHUB_USER);
+  }
+
+  public async resetAuthState() {
+    await this.resetState(AuthService.GITHUB_USER);
+    await this.resetState(AuthService.TOKEN_KEY);
   }
 }

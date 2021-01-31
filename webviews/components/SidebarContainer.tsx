@@ -1,15 +1,23 @@
 import { GraphQLClient } from 'graphql-request';
 import { useEffect, useState } from 'react';
 import { Message, VSCodeData } from '../../globals/types';
+import { AuthContext, defaultAuth } from '../contexts/AuthContext';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
+import { Auth, AuthValue, GithubUser } from '../types';
 import { Sidebar } from './Sidebar';
-import { GithubUser } from '../types';
 
 export const SidebarContainer = () => {
   let client: GraphQLClient | undefined;
-  const [accessToken, setAccessToken] = useState<string | undefined>();
-  const [githubUsername, setGithubUsername] = useState<string | undefined>();
+  const [authState, setRawAuthState] = useState<Auth>(defaultAuth);
+  const { accessToken, githubUsername, userOnServerStatus } = authState;
+
+  const setAuthState = (newState: AuthValue) => {
+    setRawAuthState({
+      ...authState,
+      ...newState,
+    });
+  };
 
   useEffect(() => {
     window.addEventListener('message', (event) => {
@@ -20,8 +28,17 @@ export const SidebarContainer = () => {
           break;
         case Message.getGithubUser:
           const { user, token }: GithubUser = message.value;
-          setAccessToken(token);
-          setGithubUsername(user);
+          if (!token || !user) {
+            setAuthState({
+              userOnServerStatus: 'notFound',
+            });
+            return;
+          }
+          setAuthState({
+            accessToken: token,
+            githubUsername: user,
+            userOnServerStatus: 'found',
+          });
           client = new GraphQLService(message.value).client;
       }
     });
@@ -29,8 +46,23 @@ export const SidebarContainer = () => {
     VSCodeService.sendMessage(Message.getGithubUser);
   }, []);
 
-  if (!accessToken || !githubUsername) {
+  const onLoginClick = () => {
+    VSCodeService.sendMessage(Message.onLogin);
+  };
+
+  const isNoUser = !accessToken || !githubUsername;
+
+  if (isNoUser && userOnServerStatus === 'fetching') {
     return <div>Loading...</div>;
   }
-  return <Sidebar accessToken={accessToken} username={githubUsername} />;
+  if (!accessToken || !githubUsername) {
+    return <button onClick={onLoginClick}>Login with Github</button>;
+  }
+  return (
+    <AuthContext.Provider
+      value={{ accessToken: githubUsername, userOnServerStatus, setAuthState }}
+    >
+      <Sidebar accessToken={accessToken} username={githubUsername} />
+    </AuthContext.Provider>
+  );
 };
