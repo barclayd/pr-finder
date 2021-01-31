@@ -5,6 +5,7 @@ export enum Message {
   newPullRequest = 'newPullRequest',
   onInfo = 'onInfo',
   onLogin = 'onLogin',
+  onLogout = 'onLogout',
   onError = 'onError',
 }
 
