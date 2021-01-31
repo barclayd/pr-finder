@@ -5,10 +5,15 @@ module.exports = {
     ecmaVersion: 6,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'simple-import-sort'],
   rules: {
-    '@typescript-eslint/naming-convention': 'warn',
     '@typescript-eslint/semi': 'warn',
+    'simple-import-sort/imports': [
+      'error',
+      {
+        groups: [['^\\u0000', '^@?\\w', '^[^.]', '^\\.']],
+      },
+    ],
     curly: 'warn',
     eqeqeq: 'warn',
     'no-throw-literal': 'warn',
