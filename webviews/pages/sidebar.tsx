@@ -1,7 +1,7 @@
-import { ReactQueryDevtools } from 'react-query/devtools';
-import { QueryClientProvider, QueryClient } from 'react-query';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { SidebarContainer } from '../components/SidebarContainer';
 
 const queryClient = new QueryClient();
