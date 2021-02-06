@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Message, NewPullRequest, VSCodeData } from '../globals/types';
 import { authenticate } from './authenticate';
 import { getNonce } from './scriptLimiter';
-import { AuthService } from './services/AuthService';
+import { UserService } from './services/UserService';
 
 export class Sidebar implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -10,7 +10,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
-    private authService: AuthService,
+    private userService: UserService,
   ) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -25,14 +25,12 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    const sendUserInfoMessage = () =>
+    const sendUserInfoMessage = () => {
       webviewView.webview.postMessage({
         type: Message.getGithubUser,
-        value: {
-          token: this.authService.getToken(),
-          user: this.authService.getGithubUser(),
-        },
+        value: this.userService.getUser(),
       });
+    };
 
     webviewView.webview.onDidReceiveMessage(async (data: VSCodeData) => {
       switch (data.type) {
@@ -70,11 +68,11 @@ export class Sidebar implements vscode.WebviewViewProvider {
           break;
         }
         case Message.onLogin: {
-          authenticate(this.authService, sendUserInfoMessage);
+          authenticate(this.userService, sendUserInfoMessage);
           return;
         }
         case Message.onLogout: {
-          return await this.authService.resetAuthState();
+          return await this.userService.resetUser();
         }
         case Message.onInfo: {
           if (!data.value) {

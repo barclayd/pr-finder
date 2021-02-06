@@ -4,21 +4,29 @@ import * as vscode from 'vscode';
 import { Message } from '../globals/types';
 import { authenticate } from './authenticate';
 import { Panel } from './Panel';
-import { AuthService } from './services/AuthService';
+import { GlobalStateService } from './services/GlobalStateService';
+import { SettingsService } from './services/SettingsService';
+import { UserService } from './services/UserService';
 import { Sidebar } from './Sidebar';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate({
+export async function activate({
   extensionUri,
   subscriptions,
   globalState,
 }: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
-  const authService = new AuthService(globalState);
-  console.log(`token success: ${authService.getToken()}`);
-  console.log(`user success: ${authService.getGithubUser()}`);
-  const sidebar = new Sidebar(extensionUri, authService);
+  const globalStateService = new GlobalStateService(globalState);
+  const userService = new UserService(globalStateService);
+  const settingsService = new SettingsService(globalStateService);
+
+  await settingsService.init();
+  console.log('user success ' + JSON.stringify(userService.getUser()));
+  console.log(
+    'settings success ' + JSON.stringify(settingsService.getSettings()),
+  );
+  const sidebar = new Sidebar(extensionUri, userService);
   subscriptions.push(
     vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),
   );
@@ -43,7 +51,7 @@ export function activate({
   subscriptions.push(
     vscode.commands.registerCommand('pr-finder.authenticate', () => {
       // The code you place here will be executed every time your command is executed
-      authenticate(authService);
+      authenticate(userService);
     }),
   );
 

@@ -2,7 +2,7 @@ import { ServerResponse } from 'http';
 import * as polka from 'polka';
 import * as vscode from 'vscode';
 import { api } from '../package.json';
-import { AuthService } from './services/AuthService';
+import { UserService } from './services/UserService';
 import { GithubUser } from './types';
 
 const PORT = 54321;
@@ -21,7 +21,7 @@ const onError = (res: ServerResponse) => {
 };
 
 export const authenticate = (
-  authService: AuthService,
+  userService: UserService,
   onSuccess?: () => void,
 ) => {
   const app = polka();
@@ -40,8 +40,11 @@ export const authenticate = (
       onError(res);
       return;
     }
-    await authService.setToken(githubData.accessToken);
-    await authService.setGithubUser(githubData.username);
+    const { accessToken, username } = githubData;
+    await userService.setUser({
+      accessToken,
+      username,
+    });
     if (onSuccess) {
       onSuccess();
     }
