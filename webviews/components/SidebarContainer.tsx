@@ -27,7 +27,7 @@ export const SidebarContainer = () => {
         case Message.addRepo:
           console.log(message);
           break;
-        case Message.getGithubUser:
+        case Message.getUser:
           const user: User = message.value;
           if (!user) {
             setAuthState({
@@ -49,7 +49,7 @@ export const SidebarContainer = () => {
       }
     });
 
-    VSCodeService.sendMessage(Message.getGithubUser);
+    VSCodeService.sendMessage(Message.getUser);
     VSCodeService.sendMessage(Message.getSettings);
   }, []);
 
