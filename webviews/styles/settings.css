@@ -1,0 +1,13 @@
+.refresh-time-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+
+.refresh-time-container > input {
+  width: 30%;
+  margin-right: 5%;
+  text-align: center;
+}
