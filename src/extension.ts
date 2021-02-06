@@ -26,7 +26,7 @@ export async function activate({
   console.log(
     'settings success ' + JSON.stringify(settingsService.getSettings()),
   );
-  const sidebar = new Sidebar(extensionUri, userService);
+  const sidebar = new Sidebar(extensionUri, userService, settingsService);
   subscriptions.push(
     vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),
   );
