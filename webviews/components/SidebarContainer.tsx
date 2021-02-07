@@ -6,7 +6,6 @@ import { defaultSettings, SettingsContext } from '../contexts/SettingsContext';
 import { usePartialState } from '../hooks/usePartialState';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
-import { Auth } from '../types';
 import { Sidebar } from './Sidebar';
 
 export const SidebarContainer = () => {
@@ -14,11 +13,11 @@ export const SidebarContainer = () => {
   const [
     { accessToken, userOnServerStatus, githubUsername },
     setAuthState,
-  ] = usePartialState<Auth>(defaultAuth);
+  ] = usePartialState(defaultAuth);
   const [
     { showDrafts, showNotifications, refreshTime },
     setSettingsState,
-  ] = usePartialState<Settings>(defaultSettings);
+  ] = usePartialState(defaultSettings);
 
   useEffect(() => {
     window.addEventListener('message', (event) => {
