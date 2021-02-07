@@ -6,6 +6,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import { usePrevious } from '../hooks/usePrevious';
 import { useSettingsContext } from '../hooks/useSettingsContext';
 import { VSCodeService } from '../services/VSCodeService';
+import { Switch } from './Switch';
 
 const minutesToMilliseconds = (minutes: number) => minutes * 60 * 1000;
 
@@ -64,12 +65,28 @@ export const Settings: FC = () => {
     });
   };
 
-  const minutesLabel = refreshTimeInMinutes > 1 ? 'Minutes' : 'Minute';
+  const onShowDraftsChange = (showDrafts: SettingsType['showDrafts']) => {
+    setSettingsState({
+      showDrafts,
+    });
+  };
+
+  const onShowNotificationsChange = (
+    showNotifications: SettingsType['showNotifications'],
+  ) => {
+    setSettingsState({
+      showNotifications,
+    });
+  };
+
+  const minutesSuffix = refreshTimeInMinutes === 1 ? '' : 's';
+  const minutesLabel = `PR refresh interval (minute${minutesSuffix})`;
 
   return (
-    <>
+    <div className="settings-container">
       <button onClick={onLogoutClick}>Logout</button>
-      <div className="refresh-time-container">
+      <div className="settings-row">
+        <label htmlFor="refresh-time">{minutesLabel}</label>
         <input
           id="refresh-time"
           type="number"
@@ -77,8 +94,25 @@ export const Settings: FC = () => {
           onChange={onChangeRefreshTime}
           step={0.5}
         />
-        <label htmlFor="refresh-time">{minutesLabel}</label>
       </div>
-    </>
+      <div className="settings-row">
+        <label htmlFor="show-notifications">
+          Show notifications for new PRs
+        </label>
+        <Switch
+          id="show-notifications"
+          isChecked={showNotifications}
+          onToggle={onShowNotificationsChange}
+        />
+      </div>
+      <div className="settings-row">
+        <label htmlFor="show-drafts">Display draft PRs</label>
+        <Switch
+          id="show-drafts"
+          isChecked={showDrafts}
+          onToggle={onShowDraftsChange}
+        />
+      </div>
+    </div>
   );
 };
