@@ -1,6 +1,6 @@
+import '../styles/table.css';
 import { CaretIcon } from './icons/CaretIcon';
 import { SyncIcon } from './icons/SyncIcon';
-import '../styles/table.css';
 
 interface TableProps<T> {
   records?: T[];

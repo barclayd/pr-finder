@@ -2,7 +2,8 @@ import '../styles/PRList.css';
 import { FC, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { Message } from '../../globals/types';
-import { getSdk,OrgPrQuery, PrQuery } from '../generated/graphql';
+import { getSdk, OrgPrQuery, PrQuery } from '../generated/graphql';
+import { useSettingsContext } from '../hooks/useSettingsContext';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
 import { Table } from './Table';
@@ -50,6 +51,8 @@ export const PRList: FC<PRListProps> = ({
   const queryKey = ['pr', repoName];
   const queryClient = useQueryClient();
 
+  const { refreshTime } = useSettingsContext();
+
   const client = accessToken
     ? new GraphQLService(accessToken).client
     : undefined;
@@ -57,7 +60,7 @@ export const PRList: FC<PRListProps> = ({
     return fallback;
   }
   const sdk = getSdk(client);
-  const { data: prData} = useQuery(
+  const { data: prData } = useQuery(
     queryKey,
     async () =>
       organisation
@@ -65,7 +68,7 @@ export const PRList: FC<PRListProps> = ({
         : await sdk.PR({ repo: repoName }),
     {
       staleTime: GraphQLService.STALE_TIME,
-      refetchInterval: GraphQLService.REFETCH_INTERVAL,
+      refetchInterval: refreshTime,
       refetchOnMount: false,
       refetchIntervalInBackground: true,
       refetchOnWindowFocus: false,

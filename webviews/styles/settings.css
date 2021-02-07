@@ -1,0 +1,15 @@
+.settings-container > * {
+  margin: 10px 0;
+}
+
+.settings-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-row > input {
+  width: 30%;
+  text-align: center;
+}

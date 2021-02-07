@@ -60,7 +60,6 @@ input[type="checkbox"]:checked.accordion-input ~ .tab-content {
 
 input[type="checkbox"]:checked.accordion-input + .tab-label::before {
   transform: rotate(90deg);
-  margin-top: 2px;
 }
 
 .accordion {

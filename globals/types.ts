@@ -1,6 +1,8 @@
 export enum Message {
   addRepo = 'addRepo',
-  getGithubUser = 'getGithubUser',
+  getUser = 'getUser',
+  getSettings = 'getSettings',
+  setSettings = 'setSettings',
   openBrowser = 'openBrowser',
   newPullRequest = 'newPullRequest',
   onInfo = 'onInfo',
@@ -22,4 +24,15 @@ export interface NewPullRequest {
   repoName: string;
   title: string;
   url: string;
+}
+
+export interface User {
+  accessToken: string;
+  username: string;
+}
+
+export interface Settings {
+  showNotifications: boolean;
+  showDrafts: boolean;
+  refreshTime: number;
 }

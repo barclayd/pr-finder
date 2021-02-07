@@ -1,13 +1,9 @@
-import { createContext } from 'react';
-import { Auth, AuthState } from '../types';
+import { Auth } from '../types';
+import { createStateContext } from './createStateContext';
 
 export const defaultAuth: Auth = {
   accessToken: undefined,
   githubUsername: undefined,
   userOnServerStatus: 'fetching',
 };
-
-export const AuthContext = createContext<AuthState>({
-  ...defaultAuth,
-  setAuthState: () => {},
-});
+export const AuthContext = createStateContext(defaultAuth);

@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import { Message, NewPullRequest, VSCodeData } from '../globals/types';
 import { authenticate } from './authenticate';
 import { getNonce } from './scriptLimiter';
-import { AuthService } from './services/AuthService';
+import { SettingsService } from './services/SettingsService';
+import { UserService } from './services/UserService';
 
 export class Sidebar implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -10,7 +11,8 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
-    private authService: AuthService,
+    private userService: UserService,
+    private settingsService: SettingsService,
   ) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -25,19 +27,25 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    const sendUserInfoMessage = () =>
+    const sendMessage = (type: Message, value: any) => {
       webviewView.webview.postMessage({
-        type: Message.getGithubUser,
-        value: {
-          token: this.authService.getToken(),
-          user: this.authService.getGithubUser(),
-        },
+        type,
+        value,
       });
+    };
+
+    const sendUserInfoMessage = () => {
+      sendMessage(Message.getUser, this.userService.getUser());
+    };
 
     webviewView.webview.onDidReceiveMessage(async (data: VSCodeData) => {
       switch (data.type) {
-        case Message.getGithubUser: {
+        case Message.getUser: {
           sendUserInfoMessage();
+          break;
+        }
+        case Message.getSettings: {
+          sendMessage(Message.getSettings, this.settingsService.getSettings());
           break;
         }
         case Message.openBrowser: {
@@ -70,11 +78,18 @@ export class Sidebar implements vscode.WebviewViewProvider {
           break;
         }
         case Message.onLogin: {
-          authenticate(this.authService, sendUserInfoMessage);
+          authenticate(this.userService, sendUserInfoMessage);
           return;
         }
+        case Message.setSettings: {
+          if (!data.value) {
+            return;
+          }
+          await this.settingsService.setSettings(data.value);
+          break;
+        }
         case Message.onLogout: {
-          return await this.authService.resetAuthState();
+          return await this.userService.resetUser();
         }
         case Message.onInfo: {
           if (!data.value) {
