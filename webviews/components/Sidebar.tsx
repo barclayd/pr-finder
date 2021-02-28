@@ -20,6 +20,7 @@ import { Table } from './Table';
 interface Props {
   accessToken: string;
   username: string;
+  initialTrackedRepos: GithubSearchRepo[];
 }
 
 const pullRequestURLMapForRepo = (pullRequestsForRepo: any[]) =>
@@ -85,12 +86,16 @@ const searchURL = (searchURI: string, repoOwner: string) =>
 
 const GITHUB_USER_ORGANISATIONS = 'https://api.github.com/user/orgs';
 
-export const Sidebar: FC<Props> = ({ accessToken, username }) => {
+export const Sidebar: FC<Props> = ({
+  accessToken,
+  username,
+  initialTrackedRepos,
+}) => {
   const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
   const [openPRList, setOpenPRList] = useState<string | undefined>();
   const [selectedOrganisation, setSelectedOrganisation] = useState<
     string | undefined
-  >('bbc');
+  >(undefined);
   const [searchOrgRepo, setSearchOrgRepo] = useState(false);
   const [showRestrictionPrompt, setShowRestrictionPrompt] = useState(false);
   const [userInput, setUserInput] = useState('');
@@ -105,7 +110,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     GithubUserOrganisation[]
   >([]);
   const [allUserOrgs, setAllUserOrgs] = useState<GithubUserOrganisation[]>([]);
-  const [trackedRepos, setTrackedRepos] = useState<GithubSearchRepo[]>([]);
+  const [trackedRepos, setTrackedRepos] = useState(initialTrackedRepos);
   const [filteredRepos, setFilteredRepos] = useState<GithubSearchRepo[]>([]);
   const previousPullRequests = usePrevious(activePullRequests);
   const networkService = new NetworkService(accessToken);
@@ -124,7 +129,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
   const repoSearch = async (input: string) => {
     const uriEncodedInput = encodeURIComponent(input);
     const repoOwner = selectedOrganisation ?? username;
-    const data = await networkService.get<GithubSearchResult>(
+    const { data } = await networkService.get<GithubSearchResult>(
       searchURL(uriEncodedInput, repoOwner),
     );
     const alreadySelectedRepos = trackedRepos.map((repo) =>
@@ -178,13 +183,19 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     setSelectedOrganisation(searchableUserOrgs[0].login);
   }, [searchOrgRepo]);
 
+  useEffect(() => {
+    if (trackedRepos !== initialTrackedRepos) {
+      VSCodeService.sendMessage(Message.setTrackedRepos, trackedRepos);
+    }
+  }, [trackedRepos]);
+
   useAsyncEffect(async () => {
-    const allUserOrgs =
+    const { data: allUserOrgs } =
       (await networkService.get<GithubUserOrganisation[]>(
         ALL_GITHUB_USER_ORGANISATIONS_URL,
       )) ?? [];
-    setAllUserOrgs(allUserOrgs);
-    if (searchableUserOrgs.length !== allUserOrgs.length) {
+    setAllUserOrgs(allUserOrgs ?? []);
+    if (searchableUserOrgs.length !== allUserOrgs?.length) {
       setShowRestrictionPrompt(true);
     }
   }, []);
@@ -214,7 +225,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     if (!accessToken) {
       return;
     }
-    const userGithubOrganisations = await networkService.get<
+    const { data: userGithubOrganisations } = await networkService.get<
       GithubUserOrganisation[]
     >(GITHUB_USER_ORGANISATIONS);
     if (!userGithubOrganisations) {
