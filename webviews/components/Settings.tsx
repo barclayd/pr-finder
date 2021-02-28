@@ -96,9 +96,7 @@ export const Settings: FC = () => {
         />
       </div>
       <div className="settings-row">
-        <label htmlFor="show-notifications">
-          Show notifications for new PRs
-        </label>
+        <label htmlFor="show-notifications">Show notifications</label>
         <Switch
           id="show-notifications"
           isChecked={showNotifications}
