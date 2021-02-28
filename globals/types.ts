@@ -1,6 +1,8 @@
 export enum Message {
   addRepo = 'addRepo',
   getUser = 'getUser',
+  getTrackedRepos = 'getTrackedRepos',
+  setTrackedRepos = 'setTrackedRepos',
   getSettings = 'getSettings',
   setSettings = 'setSettings',
   openBrowser = 'openBrowser',

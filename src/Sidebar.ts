@@ -48,6 +48,13 @@ export class Sidebar implements vscode.WebviewViewProvider {
           sendMessage(Message.getSettings, this.settingsService.getSettings());
           break;
         }
+        case Message.getTrackedRepos: {
+          sendMessage(
+            Message.getTrackedRepos,
+            this.userService.getTrackedRepos(),
+          );
+          break;
+        }
         case Message.openBrowser: {
           if (!data.value) {
             return;
@@ -86,6 +93,13 @@ export class Sidebar implements vscode.WebviewViewProvider {
             return;
           }
           await this.settingsService.setSettings(data.value);
+          break;
+        }
+        case Message.setTrackedRepos: {
+          if (!data.value) {
+            return;
+          }
+          await this.userService.setTrackedRepos(data.value);
           break;
         }
         case Message.onLogout: {
