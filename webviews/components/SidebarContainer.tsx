@@ -60,7 +60,7 @@ export const SidebarContainer = () => {
           break;
         case Message.getTrackedRepos:
           const trackedRepos = message.value as GithubSearchRepo[] | undefined;
-          if (!trackedRepos || trackedRepos.length === 0) {
+          if (!trackedRepos || !trackedRepos) {
             break;
           }
           const networkService = new NetworkService(localUserData.accessToken);

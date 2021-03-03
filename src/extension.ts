@@ -38,16 +38,6 @@ export async function activate({
   statusBarItem.command = 'pr-finder.addRepo';
   statusBarItem.show();
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  subscriptions.push(
-    vscode.commands.registerCommand('pr-finder.helloWorld', () => {
-      // The code you place here will be executed every time your command is executed
-      Panel.createOrShow(extensionUri);
-    }),
-  );
-
   subscriptions.push(
     vscode.commands.registerCommand('pr-finder.authenticate', () => {
       // The code you place here will be executed every time your command is executed
