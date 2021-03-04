@@ -11,7 +11,6 @@
   ],
   "activationEvents": [
     "onView:pr-finder-sidebar",
-    "onCommand:pr-finder.helloWorld",
     "onCommand:pr-finder.askQuestion",
     "onCommand:pr-finder.refresh",
     "onCommand:pr-finder.addRepo",
@@ -43,10 +42,6 @@
       ]
     },
     "commands": [
-      {
-        "command": "pr-finder.helloWorld",
-        "title": "Hello World"
-      },
       {
         "command": "pr-finder.askQuestion",
         "category": "PRFinder",

@@ -1,25 +1,26 @@
+import '../styles/sidebar.css';
+import { useCombobox } from 'downshift';
+import debounce from 'lodash/debounce';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Message, NewPullRequest } from '../../globals/types';
-import { useCombobox } from 'downshift';
-import { Table } from './Table';
-import { VSCodeService } from '../services/VSCodeService';
-import { PRList } from './PRList';
-import { Accordion } from './Accordion';
-import { SearchIcon } from './icons/SearchIcon';
-import { TrashIcon } from './icons/TrashIcon';
+import { GithubUserOrganisation } from '../../src/types';
+import { useAsyncEffect } from '../hooks/useAsyncEffect';
 import { usePrevious } from '../hooks/usePrevious';
 import { NetworkService } from '../services/NetworkService';
-import { GithubUserOrganisation } from '../../src/types';
-import debounce from 'lodash/debounce';
+import { VSCodeService } from '../services/VSCodeService';
 import { GithubSearchRepo, GithubSearchResult } from '../types';
-import { useAsyncEffect } from '../hooks/useAsyncEffect';
+import { Accordion } from './Accordion';
 import { CloseIcon } from './icons/CloseIcon';
-import '../styles/sidebar.css';
+import { SearchIcon } from './icons/SearchIcon';
+import { TrashIcon } from './icons/TrashIcon';
+import { PRList } from './PRList';
 import { Settings } from './Settings';
+import { Table } from './Table';
 
 interface Props {
   accessToken: string;
   username: string;
+  initialTrackedRepos: GithubSearchRepo[];
 }
 
 const pullRequestURLMapForRepo = (pullRequestsForRepo: any[]) =>
@@ -85,12 +86,16 @@ const searchURL = (searchURI: string, repoOwner: string) =>
 
 const GITHUB_USER_ORGANISATIONS = 'https://api.github.com/user/orgs';
 
-export const Sidebar: FC<Props> = ({ accessToken, username }) => {
+export const Sidebar: FC<Props> = ({
+  accessToken,
+  username,
+  initialTrackedRepos,
+}) => {
   const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
   const [openPRList, setOpenPRList] = useState<string | undefined>();
   const [selectedOrganisation, setSelectedOrganisation] = useState<
     string | undefined
-  >('bbc');
+  >(undefined);
   const [searchOrgRepo, setSearchOrgRepo] = useState(false);
   const [showRestrictionPrompt, setShowRestrictionPrompt] = useState(false);
   const [userInput, setUserInput] = useState('');
@@ -105,7 +110,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     GithubUserOrganisation[]
   >([]);
   const [allUserOrgs, setAllUserOrgs] = useState<GithubUserOrganisation[]>([]);
-  const [trackedRepos, setTrackedRepos] = useState<GithubSearchRepo[]>([]);
+  const [trackedRepos, setTrackedRepos] = useState(initialTrackedRepos);
   const [filteredRepos, setFilteredRepos] = useState<GithubSearchRepo[]>([]);
   const previousPullRequests = usePrevious(activePullRequests);
   const networkService = new NetworkService(accessToken);
@@ -124,7 +129,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
   const repoSearch = async (input: string) => {
     const uriEncodedInput = encodeURIComponent(input);
     const repoOwner = selectedOrganisation ?? username;
-    const data = await networkService.get<GithubSearchResult>(
+    const { data } = await networkService.get<GithubSearchResult>(
       searchURL(uriEncodedInput, repoOwner),
     );
     const alreadySelectedRepos = trackedRepos.map((repo) =>
@@ -178,13 +183,19 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     setSelectedOrganisation(searchableUserOrgs[0].login);
   }, [searchOrgRepo]);
 
+  useEffect(() => {
+    if (trackedRepos !== initialTrackedRepos) {
+      VSCodeService.sendMessage(Message.setTrackedRepos, trackedRepos);
+    }
+  }, [trackedRepos]);
+
   useAsyncEffect(async () => {
-    const allUserOrgs =
+    const { data: allUserOrgs } =
       (await networkService.get<GithubUserOrganisation[]>(
         ALL_GITHUB_USER_ORGANISATIONS_URL,
       )) ?? [];
-    setAllUserOrgs(allUserOrgs);
-    if (searchableUserOrgs.length !== allUserOrgs.length) {
+    setAllUserOrgs(allUserOrgs ?? []);
+    if (searchableUserOrgs.length !== allUserOrgs?.length) {
       setShowRestrictionPrompt(true);
     }
   }, []);
@@ -214,7 +225,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     if (!accessToken) {
       return;
     }
-    const userGithubOrganisations = await networkService.get<
+    const { data: userGithubOrganisations } = await networkService.get<
       GithubUserOrganisation[]
     >(GITHUB_USER_ORGANISATIONS);
     if (!userGithubOrganisations) {
@@ -270,15 +281,15 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
     },
   });
 
-  const activePullRequestsCount = () => {
+  const getActivePullRequests = () => {
     const count = Object.keys(activePullRequests).reduce((acc, key) => {
       acc += activePullRequests[key as any].length;
       return acc;
     }, 0);
-    if (count === 0) {
-      return '';
-    }
-    return count > 0 ? `(${count})` : 0;
+    return {
+      activePullRequestsCount: count,
+      formattedCount: count > 0 ? `(${count})` : '',
+    };
   };
 
   const findRepoByName = (name: string): GithubSearchRepo | undefined => {
@@ -324,11 +335,14 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
       ? 'No orgs available to search'
       : "Can't find the orgs you were looking for?";
 
+  const { activePullRequestsCount, formattedCount } = getActivePullRequests();
+
   return (
     <Accordion
       content={[
         {
-          name: `PRs ${activePullRequestsCount()}`,
+          name: `PRs ${formattedCount}`,
+          isEnabled: activePullRequestsCount > 0,
           content:
             trackedRepos.length > 0 ? (
               <>
@@ -351,6 +365,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
         },
         {
           name: 'Search Repos',
+          isEnabled: true,
           content: (
             <>
               <div className="organisation-checkbox">
@@ -462,6 +477,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
           name: `Tracked Repos ${
             trackedRepos.length > 0 ? `(${trackedRepos.length})` : ''
           }`,
+          isEnabled: trackedRepos.length > 0,
           content:
             trackedRepos.length > 0 ? (
               <Table
@@ -478,6 +494,7 @@ export const Sidebar: FC<Props> = ({ accessToken, username }) => {
         },
         {
           name: 'Settings',
+          isEnabled: true,
           content: <Settings />,
         },
       ]}

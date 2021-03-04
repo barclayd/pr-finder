@@ -10,11 +10,6 @@ export interface GithubSearchRepo {
   organisation?: string;
 }
 
-export interface GithubUser {
-  token?: string;
-  user?: string;
-}
-
 export type Auth = {
   accessToken?: string;
   githubUsername?: string;
@@ -22,3 +17,8 @@ export type Auth = {
 };
 
 export type State<T> = T & { setState: (partialState: Partial<T>) => void };
+
+export type GlobalState = {
+  activePullRequests: any;
+  trackedRepos?: GithubSearchRepo[];
+};

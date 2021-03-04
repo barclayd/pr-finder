@@ -20,12 +20,18 @@
   display: flex;
   justify-content: flex-start;
   padding: 0.2em 0;
-  cursor: pointer;
   color: var(--vscode-list-deemphasizedForeground);
   text-transform: uppercase;
   font-weight: bold;
   font-size: 0.9rem;
   filter: brightness(80%);
+  opacity: 0.4;
+  cursor: default;
+}
+
+.tab-label.active {
+  opacity: 1;
+  cursor: pointer;
 }
 
 .tab-label::before {
@@ -46,19 +52,19 @@
   background-color: var(--vscode-editor-background);
 }
 
-input[type="checkbox"].accordion-input {
+input[type='checkbox'].accordion-input {
   position: absolute;
   opacity: 0;
   z-index: -1;
   margin: 0;
 }
 
-input[type="checkbox"]:checked.accordion-input ~ .tab-content {
+input[type='checkbox']:checked.accordion-input ~ .tab-content {
   max-height: 100vh;
   padding: 0.25em 0;
 }
 
-input[type="checkbox"]:checked.accordion-input + .tab-label::before {
+input[type='checkbox']:checked.accordion-input + .tab-label::before {
   transform: rotate(90deg);
 }
 

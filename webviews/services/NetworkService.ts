@@ -9,14 +9,23 @@ export class NetworkService {
     };
   }
 
-  public async get<T>(URL: string): Promise<T | undefined> {
+  public async get<T>(
+    URL: string,
+  ): Promise<{ status: number; data: T | undefined }> {
     try {
       const data = await axios.get<T>(URL, {
         headers: this.headers,
       });
-      return data.data;
+      return {
+        status: data.status,
+        data: data.data,
+      };
     } catch (error) {
       console.log(`Error fetching URL: ${URL} with error: ${error}`);
+      return {
+        status: 500,
+        data: undefined,
+      };
     }
   }
 }
