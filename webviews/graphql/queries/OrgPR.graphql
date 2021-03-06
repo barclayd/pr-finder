@@ -5,6 +5,7 @@ query OrgPR($org: String!, $repo: String!) {
         nodes {
           title
           url
+          updatedAt
           reviews(first: 100, states: APPROVED) {
             nodes {
               author {
