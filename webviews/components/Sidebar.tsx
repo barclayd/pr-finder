@@ -6,6 +6,7 @@ import { Message, NewPullRequest } from '../../globals/types';
 import { GithubUserOrganisation } from '../../src/types';
 import { useAsyncEffect } from '../hooks/useAsyncEffect';
 import { usePrevious } from '../hooks/usePrevious';
+import { useSettingsContext } from '../hooks/useSettingsContext';
 import { NetworkService } from '../services/NetworkService';
 import { VSCodeService } from '../services/VSCodeService';
 import { GithubSearchRepo, GithubSearchResult } from '../types';
@@ -113,6 +114,8 @@ export const Sidebar: FC<Props> = ({
   const [trackedRepos, setTrackedRepos] = useState(initialTrackedRepos);
   const [filteredRepos, setFilteredRepos] = useState<GithubSearchRepo[]>([]);
   const previousPullRequests = usePrevious(activePullRequests);
+  const { showNotifications } = useSettingsContext();
+
   const networkService = new NetworkService(accessToken);
 
   const ALL_GITHUB_USER_ORGANISATIONS_URL = `https://api.github.com/users/${username}/orgs`;
@@ -201,6 +204,9 @@ export const Sidebar: FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    if (!showNotifications) {
+      return;
+    }
     if (
       previousPullRequests === undefined ||
       previousPullRequests.length === 0

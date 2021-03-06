@@ -70,7 +70,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
             return;
           }
           const { title, author, repoName, url }: NewPullRequest = data.value;
-          const message = `New Pull Request: ${title} in ${repoName} - opened by ${author.login} - is ready for review`;
+          const message = `New PR: ${title} in ${repoName} - opened by ${author.login}`;
           const viewOnGithub = 'View on GitHub';
           const show = await vscode.window.showInformationMessage(
             message,
