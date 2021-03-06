@@ -14,9 +14,9 @@ import { Accordion } from './Accordion';
 import { CloseIcon } from './icons/CloseIcon';
 import { SearchIcon } from './icons/SearchIcon';
 import { TrashIcon } from './icons/TrashIcon';
-import { PRList } from './PRList';
 import { Settings } from './Settings';
 import { Table } from './Table';
+import { PRTab } from './tabs/PRTab';
 
 interface Props {
   accessToken: string;
@@ -287,17 +287,6 @@ export const Sidebar: FC<Props> = ({
     },
   });
 
-  const getActivePullRequests = () => {
-    const count = Object.keys(activePullRequests).reduce((acc, key) => {
-      acc += activePullRequests[key as any].length;
-      return acc;
-    }, 0);
-    return {
-      activePullRequestsCount: count,
-      formattedCount: count > 0 ? `(${count})` : '',
-    };
-  };
-
   const findRepoByName = (name: string): GithubSearchRepo | undefined => {
     return trackedRepos.find(
       (repo) => repo.name.toLowerCase() === name.toLowerCase(),
@@ -341,34 +330,18 @@ export const Sidebar: FC<Props> = ({
       ? 'No orgs available to search'
       : "Can't find the orgs you were looking for?";
 
-  const { activePullRequestsCount, formattedCount } = getActivePullRequests();
-
   return (
     <Accordion
       content={[
-        {
-          name: `PRs ${formattedCount}`,
-          isEnabled: activePullRequestsCount > 0,
-          content:
-            trackedRepos.length > 0 ? (
-              <>
-                {trackedRepos.map((repo) => (
-                  <PRList
-                    key={repo.name}
-                    isOpen={openPRList === repo.name}
-                    accessToken={accessToken}
-                    repoName={repo.name}
-                    repoUrl={repo.html_url}
-                    organisation={repo.organisation}
-                    username="barclayd"
-                    onOpenListClick={() => onOpenListClick(repo.name)}
-                    activePullRequests={activePullRequests}
-                    setActivePullRequests={setActivePullRequests}
-                  />
-                ))}
-              </>
-            ) : null,
-        },
+        PRTab({
+          activePullRequests,
+          accessToken,
+          username,
+          setActivePullRequests,
+          trackedRepos,
+          openPRList,
+          onOpenListClick,
+        }),
         {
           name: 'Search Repos',
           isEnabled: true,
