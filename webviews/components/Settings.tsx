@@ -104,7 +104,7 @@ export const Settings: FC = () => {
         />
       </div>
       <div className="settings-row">
-        <label htmlFor="show-drafts">Display draft PRs</label>
+        <label htmlFor="show-drafts">Show draft PRs</label>
         <Switch
           id="show-drafts"
           isChecked={showDrafts}
