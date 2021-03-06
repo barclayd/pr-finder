@@ -51,7 +51,6 @@ const isPullRequestAwaitingReview = ({
   if (!pullRequest) {
     return false;
   }
-  console.log(pullRequest);
   const isUserPRAuthor = pullRequest.author?.login === username;
   const isAlreadyReviewed = pullRequest.reviews?.nodes
     ?.map((reviewer) => reviewer?.author?.login)
@@ -132,7 +131,7 @@ export const PRList: FC<PRListProps> = ({
       [repoName]: pullRequestsWaitingReview,
     };
     setActivePullRequests(updatedPullRequests);
-  }, [prData]);
+  }, [prData, showDrafts]);
 
   if (activePullRequests[repoName as any]?.length === 0) {
     return fallback;
@@ -154,11 +153,22 @@ export const PRList: FC<PRListProps> = ({
   return (
     <Table
       records={activePullRequests[repoName as any]
-        ?.filter((pr: any) => pr !== null && pr !== undefined)
-        .map((pr: any) => ({
+        ?.filter((pr: PullRequest) => pr !== null && pr !== undefined)
+        .sort(
+          (a: PullRequest, b: PullRequest) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        )
+        .map((pr: PullRequest) => ({
           title: (
-            <div className="title-wrapper">
-              <div className="pr-title" onClick={() => goToPage(pr!.url)}>
+            <div
+              className={['title-wrapper', pr.isDraft ? 'draft-pr' : ''].join(
+                ' ',
+              )}
+            >
+              <div
+                className={['pr-title', pr.isDraft ? 'draft-pr' : ''].join(' ')}
+                onClick={() => goToPage(pr!.url)}
+              >
                 {formatPRTitle(pr!.title)}
               </div>
               {pr!.author?.avatarUrl ? (

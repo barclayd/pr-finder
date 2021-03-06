@@ -19607,7 +19607,7 @@ export type OrgPrQuery = (
         & Pick<PullRequestConnection, 'totalCount'>
         & { nodes?: Maybe<Array<Maybe<(
           { __typename?: 'PullRequest' }
-          & Pick<PullRequest, 'title' | 'url' | 'updatedAt'>
+          & Pick<PullRequest, 'title' | 'url' | 'updatedAt' | 'isDraft'>
           & { reviews?: Maybe<(
             { __typename?: 'PullRequestReviewConnection' }
             & { nodes?: Maybe<Array<Maybe<(
@@ -19667,7 +19667,7 @@ export type PrQuery = (
         & Pick<PullRequestConnection, 'totalCount'>
         & { nodes?: Maybe<Array<Maybe<(
           { __typename?: 'PullRequest' }
-          & Pick<PullRequest, 'title' | 'url' | 'updatedAt'>
+          & Pick<PullRequest, 'title' | 'url' | 'updatedAt' | 'isDraft'>
           & { reviews?: Maybe<(
             { __typename?: 'PullRequestReviewConnection' }
             & { nodes?: Maybe<Array<Maybe<(
@@ -19744,6 +19744,7 @@ export const OrgPrDocument = gql`
           title
           url
           updatedAt
+          isDraft
           reviews(first: 100, states: APPROVED) {
             nodes {
               author {
@@ -19772,6 +19773,7 @@ export const PrDocument = gql`
           title
           url
           updatedAt
+          isDraft
           reviews(first: 100, states: APPROVED) {
             nodes {
               author {
