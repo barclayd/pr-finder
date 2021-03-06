@@ -22,3 +22,9 @@ export type GlobalState = {
   activePullRequests: any;
   trackedRepos?: GithubSearchRepo[];
 };
+
+export interface AccordionItem {
+  name: string;
+  isEnabled: boolean;
+  content: JSX.Element | null;
+}
