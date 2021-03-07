@@ -1,3 +1,5 @@
+import { PullRequest } from '../generated/graphql';
+
 export interface GithubSearchResult {
   items: GithubSearchRepo[];
 }
@@ -28,3 +30,7 @@ export interface AccordionItem {
   isEnabled: boolean;
   content: JSX.Element | null;
 }
+
+export type PullRequests = PullRequest[];
+
+export type TrackedPullRequests = Record<string, PullRequests>;

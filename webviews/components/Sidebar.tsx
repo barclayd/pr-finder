@@ -9,7 +9,11 @@ import { usePrevious } from '../hooks/usePrevious';
 import { useSettingsContext } from '../hooks/useSettingsContext';
 import { NetworkService } from '../services/NetworkService';
 import { VSCodeService } from '../services/VSCodeService';
-import { GithubSearchRepo, GithubSearchResult } from '../types';
+import {
+  GithubSearchRepo,
+  GithubSearchResult,
+  TrackedPullRequests,
+} from '../types';
 import { Accordion } from './Accordion';
 import { CloseIcon } from './icons/CloseIcon';
 import { SearchIcon } from './icons/SearchIcon';
@@ -92,7 +96,10 @@ export const Sidebar: FC<Props> = ({
   username,
   initialTrackedRepos,
 }) => {
-  const [activePullRequests, setActivePullRequests] = useState<any[]>([]);
+  const [
+    activePullRequests,
+    setActivePullRequests,
+  ] = useState<TrackedPullRequests>({});
   const [openPRList, setOpenPRList] = useState<string | undefined>();
   const [selectedOrganisation, setSelectedOrganisation] = useState<
     string | undefined
@@ -209,7 +216,7 @@ export const Sidebar: FC<Props> = ({
     }
     if (
       previousPullRequests === undefined ||
-      previousPullRequests.length === 0
+      Object.keys(previousPullRequests).length === 0
     ) {
       return;
     }

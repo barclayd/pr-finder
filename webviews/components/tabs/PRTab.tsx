@@ -1,5 +1,9 @@
 import { Dispatch, FC, SetStateAction } from 'react';
-import { AccordionItem, GithubSearchRepo } from '../../types';
+import {
+  AccordionItem,
+  GithubSearchRepo,
+  TrackedPullRequests,
+} from '../../types';
 import { PRList } from '../PRList';
 
 interface PRTabProps {
@@ -7,16 +11,16 @@ interface PRTabProps {
   openPRList?: string;
   accessToken: string;
   onOpenListClick: (clickedRepoName: string) => void;
-  activePullRequests: any[];
-  setActivePullRequests: Dispatch<SetStateAction<any[]>>;
+  activePullRequests: TrackedPullRequests;
+  setActivePullRequests: Dispatch<SetStateAction<TrackedPullRequests>>;
   username: string;
 }
 
 interface PRListsProps extends PRTabProps {}
 
-const getActivePullRequests = (activePullRequests: any[]) => {
+const getActivePullRequests = (activePullRequests: TrackedPullRequests) => {
   const count = Object.keys(activePullRequests).reduce((acc, key) => {
-    acc += activePullRequests[key as any].length;
+    acc += activePullRequests[key as keyof typeof activePullRequests].length;
     return acc;
   }, 0);
   return {

@@ -12,6 +12,7 @@ import {
 import { useSettingsContext } from '../hooks/useSettingsContext';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
+import { PullRequests, TrackedPullRequests } from '../types';
 import { Table } from './Table';
 
 interface PRListProps {
@@ -22,11 +23,9 @@ interface PRListProps {
   isOpen: boolean;
   onOpenListClick: () => void;
   repoUrl: string;
-  activePullRequests: any[];
-  setActivePullRequests: (prList: any[]) => void;
+  activePullRequests: TrackedPullRequests;
+  setActivePullRequests: (prList: TrackedPullRequests) => void;
 }
-
-type PullRequests = Array<Maybe<PullRequest>>;
 
 const goToPage = (url: string) => {
   VSCodeService.sendMessage(Message.openBrowser, url);
@@ -152,13 +151,13 @@ export const PRList: FC<PRListProps> = ({
 
   return (
     <Table
-      records={activePullRequests[repoName as any]
-        ?.filter((pr: PullRequest) => pr !== null && pr !== undefined)
+      records={activePullRequests[repoName as keyof typeof activePullRequests]
+        .filter((pr) => pr !== null && pr !== undefined)
         .sort(
-          (a: PullRequest, b: PullRequest) =>
+          (a, b) =>
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
         )
-        .map((pr: PullRequest) => ({
+        .map((pr) => ({
           title: (
             <div
               className={['title-wrapper', pr.isDraft ? 'draft-pr' : ''].join(
@@ -167,9 +166,9 @@ export const PRList: FC<PRListProps> = ({
             >
               <div
                 className={['pr-title', pr.isDraft ? 'draft-pr' : ''].join(' ')}
-                onClick={() => goToPage(pr!.url)}
+                onClick={() => goToPage(pr.url)}
               >
-                {formatPRTitle(pr!.title)}
+                {formatPRTitle(pr.title)}
               </div>
               {pr!.author?.avatarUrl ? (
                 <img
