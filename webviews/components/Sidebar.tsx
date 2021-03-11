@@ -7,11 +7,10 @@ import { NetworkService } from '../services/NetworkService';
 import { VSCodeService } from '../services/VSCodeService';
 import { GithubSearchRepo, TrackedPullRequests } from '../types';
 import { Accordion } from './Accordion';
-import { TrashIcon } from './icons/TrashIcon';
 import { Settings } from './Settings';
-import { Table } from './Table';
 import { PRTab } from './tabs/PRTab';
 import { SearchReposTab } from './tabs/SearchReposTab';
+import { TrackedReposTab } from './tabs/TrackedReposTab';
 
 interface Props {
   accessToken: string;
@@ -121,31 +120,6 @@ export const Sidebar: FC<Props> = ({
     }
   }, [activePullRequests]);
 
-  const onTrackedRepoDeleteClick = (clickedRepo: GithubSearchRepo) => {
-    setTrackedRepos(trackedRepos.filter((repo) => repo !== clickedRepo));
-    const updatedPullRequests = activePullRequests;
-    delete updatedPullRequests[
-      clickedRepo.name as keyof typeof updatedPullRequests
-    ];
-    setActivePullRequests(updatedPullRequests);
-  };
-
-  const onOpenListClick = (clickedRepoName: string) => {
-    openPRList === clickedRepoName
-      ? setOpenPRList(undefined)
-      : setOpenPRList(clickedRepoName);
-  };
-
-  const onRecordClick = ({ name }: { name: string; track: JSX.Element }) => {
-    const repo = trackedRepos.find(
-      (repo) => repo.name.toLowerCase() === name.toLowerCase(),
-    );
-    if (!repo) {
-      return;
-    }
-    VSCodeService.sendMessage(Message.openBrowser, `${repo.html_url}/pulls`);
-  };
-
   return (
     <Accordion
       content={[
@@ -156,7 +130,7 @@ export const Sidebar: FC<Props> = ({
           setActivePullRequests,
           trackedRepos,
           openPRList,
-          onOpenListClick,
+          setOpenPRList,
         }),
         SearchReposTab({
           trackedRepos,
@@ -166,25 +140,12 @@ export const Sidebar: FC<Props> = ({
           username,
           accessToken,
         }),
-        {
-          name: `Tracked Repos ${
-            trackedRepos.length > 0 ? `(${trackedRepos.length})` : ''
-          }`,
-          isEnabled: trackedRepos.length > 0,
-          content:
-            trackedRepos.length > 0 ? (
-              <Table
-                isOpen
-                records={trackedRepos.map((repo) => ({
-                  name: repo.name,
-                  track: (
-                    <TrashIcon onClick={() => onTrackedRepoDeleteClick(repo)} />
-                  ),
-                }))}
-                onRecordClick={onRecordClick}
-              />
-            ) : null,
-        },
+        TrackedReposTab({
+          trackedRepos,
+          activePullRequests,
+          setActivePullRequests,
+          setTrackedRepos,
+        }),
         {
           name: 'Settings',
           isEnabled: true,

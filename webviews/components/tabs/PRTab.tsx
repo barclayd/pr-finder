@@ -10,7 +10,7 @@ interface PRTabProps {
   trackedRepos: GithubSearchRepo[];
   openPRList?: string;
   accessToken: string;
-  onOpenListClick: (clickedRepoName: string) => void;
+  setOpenPRList: Dispatch<SetStateAction<string | undefined>>;
   activePullRequests: TrackedPullRequests;
   setActivePullRequests: Dispatch<SetStateAction<TrackedPullRequests>>;
   username: string;
@@ -46,9 +46,15 @@ const PRLists: FC<PRListsProps> = ({
   activePullRequests,
   username,
   openPRList,
-  onOpenListClick,
+  setOpenPRList,
   setActivePullRequests,
 }) => {
+  const onOpenListClick = (clickedRepoName: string) => {
+    openPRList === clickedRepoName
+      ? setOpenPRList(undefined)
+      : setOpenPRList(clickedRepoName);
+  };
+
   return trackedRepos.length > 0 ? (
     <>
       {trackedRepos.map((repo) => (
