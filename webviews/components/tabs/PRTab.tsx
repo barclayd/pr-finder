@@ -29,32 +29,14 @@ const getActivePullRequests = (activePullRequests: TrackedPullRequests) => {
   };
 };
 
-export const PRTab = ({
-  trackedRepos,
-  accessToken,
-  activePullRequests,
-  onOpenListClick,
-  openPRList,
-  setActivePullRequests,
-  username,
-}: PRTabProps): AccordionItem => {
+export const PRTab = (props: PRTabProps): AccordionItem => {
   const { activePullRequestsCount, formattedCount } = getActivePullRequests(
-    activePullRequests,
+    props.activePullRequests,
   );
   return {
     name: `PRs ${formattedCount}`,
     isEnabled: activePullRequestsCount > 0,
-    content: (
-      <PRLists
-        trackedRepos={trackedRepos}
-        accessToken={accessToken}
-        activePullRequests={activePullRequests}
-        setActivePullRequests={setActivePullRequests}
-        openPRList={openPRList}
-        onOpenListClick={onOpenListClick}
-        username={username}
-      />
-    ),
+    content: <PRLists {...props} />,
   };
 };
 
