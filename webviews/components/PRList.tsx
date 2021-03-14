@@ -152,7 +152,7 @@ export const PRList: FC<PRListProps> = ({
   return (
     <Table
       records={activePullRequests[repoName as keyof typeof activePullRequests]
-        .filter((pr) => pr !== null && pr !== undefined)
+        ?.filter((pr) => pr !== null && pr !== undefined)
         .sort(
           (a, b) =>
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),

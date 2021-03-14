@@ -1,8 +1,21 @@
 import { useCombobox } from 'downshift';
 import debounce from 'lodash/debounce';
-import { Dispatch, FC, SetStateAction, useRef, useState } from 'react';
+import {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { GithubUserOrganisation } from '../../../src/types';
-import { AccordionItem, GithubSearchRepo } from '../../types';
+import { useAsyncEffect } from '../../hooks/useAsyncEffect';
+import { NetworkService } from '../../services/NetworkService';
+import {
+  AccordionItem,
+  GithubSearchRepo,
+  GithubSearchResult,
+} from '../../types';
 import { CloseIcon } from '../icons/CloseIcon';
 import { SearchIcon } from '../icons/SearchIcon';
 
@@ -10,6 +23,9 @@ interface SearchReposTab {
   trackedRepos: GithubSearchRepo[];
   setTrackedRepos: Dispatch<SetStateAction<GithubSearchRepo[]>>;
   setOpenPRList: Dispatch<SetStateAction<string | undefined>>;
+  username: string;
+  accessToken: string;
+  networkService: NetworkService;
 }
 interface SearchReposProps extends SearchReposTab {}
 
@@ -24,6 +40,11 @@ const findRepoByName = (
   );
 };
 
+const searchURL = (searchURI: string, repoOwner: string) =>
+  `https://api.github.com/search/repositories?q=${searchURI}%20in:name,description+org:${repoOwner}&per_page=100`;
+
+const GITHUB_USER_ORGANISATIONS = 'https://api.github.com/user/orgs';
+
 export const SearchReposTab = (props: SearchReposTab): AccordionItem => ({
   name: 'Search Repos',
   isEnabled: true,
@@ -34,6 +55,9 @@ const SearchRepos: FC<SearchReposProps> = ({
   trackedRepos,
   setTrackedRepos,
   setOpenPRList,
+  username,
+  networkService,
+  accessToken,
 }) => {
   const [allUserOrgs, setAllUserOrgs] = useState<GithubUserOrganisation[]>([]);
   const [searchOrgRepo, setSearchOrgRepo] = useState(false);
@@ -56,16 +80,98 @@ const SearchRepos: FC<SearchReposProps> = ({
     debounceUserInput.current = debounce(setValidatedUserInput, 500);
   }
 
+  useAsyncEffect(async () => {
+    if (!userInput || userInput.length < 2) {
+      setFilteredRepos([]);
+      return;
+    }
+    const trimmedInput = userInput?.trim();
+    await repoSearch(trimmedInput);
+  }, [userInput]);
+
+  const repoSearch = async (input: string) => {
+    const uriEncodedInput = encodeURIComponent(input);
+    const repoOwner = selectedOrganisation ?? username;
+    const { data } = await networkService.get<GithubSearchResult>(
+      searchURL(uriEncodedInput, repoOwner),
+    );
+    const alreadySelectedRepos = trackedRepos.map((repo) =>
+      repo.name.toLowerCase(),
+    );
+    if (!data || data.items.length === 0) {
+      const disabledGithubSearch: GithubSearchRepo = {
+        name: '!disabled!',
+        description: '',
+        updated_at: '',
+        html_url: '',
+      };
+      setFilteredRepos([disabledGithubSearch]);
+      return;
+    }
+    setFilteredRepos(
+      data.items
+        .filter(
+          (repo) => !alreadySelectedRepos.includes(repo.name.toLowerCase()),
+        )
+        .sort(
+          (a, b) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+        ) ?? [],
+    );
+  };
+
+  useEffect(() => {
+    if (!searchOrgRepo) {
+      clearDropdownOnOrgChange();
+      setSelectedOrganisation(undefined);
+      return;
+    }
+    if (searchableUserOrgs.length === 0) {
+      return;
+    }
+    clearDropdownOnOrgChange();
+    setSelectedOrganisation(searchableUserOrgs[0].login);
+  }, [searchOrgRepo]);
+
+  useAsyncEffect(async () => {
+    const { data: allUserOrgs } =
+      (await networkService.get<GithubUserOrganisation[]>(
+        ALL_GITHUB_USER_ORGANISATIONS_URL,
+      )) ?? [];
+    setAllUserOrgs(allUserOrgs ?? []);
+    if (searchableUserOrgs.length !== allUserOrgs?.length) {
+      setShowRestrictionPrompt(true);
+    }
+  }, []);
+
+  useAsyncEffect(async () => {
+    const { data: userGithubOrganisations } = await networkService.get<
+      GithubUserOrganisation[]
+    >(GITHUB_USER_ORGANISATIONS);
+    if (!userGithubOrganisations) {
+      return;
+    }
+    setSearchableUserOrgs(userGithubOrganisations);
+  }, [accessToken]);
+
   const missingOrgWarningTitle =
     allUserOrgs.length > 0 && searchableUserOrgs.length === 0
       ? 'No orgs available to search'
       : "Can't find the orgs you were looking for?";
+
+  const ALL_GITHUB_USER_ORGANISATIONS_URL = `https://api.github.com/users/${username}/orgs`;
 
   const isNoResults =
     filteredRepos.length === 1 && filteredRepos[0].name === disabledGithubRepo;
 
   const hideShowOrganisationRestrictionPrompt = () => {
     setShowRestrictionPrompt(false);
+  };
+
+  const clearDropdownOnOrgChange = () => {
+    setFilteredRepos([]);
+    closeMenu();
+    setInputValue('');
   };
 
   const openDropdown = () => {
@@ -125,7 +231,7 @@ const SearchRepos: FC<SearchReposProps> = ({
     },
   });
 
-  const resultsFound = isOpen && !isNoResults;
+  const showFoundResults = isOpen && !isNoResults;
   const isSearchableOrgs = searchOrgRepo && searchableUserOrgs.length > 0;
 
   return (
@@ -198,30 +304,29 @@ const SearchRepos: FC<SearchReposProps> = ({
           position: 'relative',
         }}
       >
-        {resultsFound
-          ? filteredRepos.map((item, index) => (
-              <li
-                className="dropdown-list-item"
-                style={
-                  highlightedIndex === index
-                    ? { backgroundColor: '#bde4ff' }
-                    : {}
-                }
-                key={`${item}${index}`}
-                {...getItemProps({ item, index })}
-              >
-                {item.name}
-              </li>
-            ))
-          : filteredRepos.map((item, index) => (
-              <li
-                className="dropdown-list-item disabled-list-item"
-                key={item.name}
-                {...getItemProps({ item, index, disabled: true })}
-              >
-                No results found
-              </li>
-            ))}
+        {isNoResults &&
+          filteredRepos.map((item, index) => (
+            <li
+              className="dropdown-list-item disabled-list-item"
+              key={item.name}
+              {...getItemProps({ item, index, disabled: true })}
+            >
+              No results found
+            </li>
+          ))}
+        {showFoundResults &&
+          filteredRepos.map((item, index) => (
+            <li
+              className="dropdown-list-item"
+              style={
+                highlightedIndex === index ? { backgroundColor: '#bde4ff' } : {}
+              }
+              key={`${item}${index}`}
+              {...getItemProps({ item, index })}
+            >
+              {item.name}
+            </li>
+          ))}
       </ul>
     </>
   );
