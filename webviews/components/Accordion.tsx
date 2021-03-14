@@ -14,7 +14,7 @@ export const Accordion: FC<Props> = ({ content }) => (
           className="accordion-input"
           type="checkbox"
           id={name}
-          disabled={!content}
+          disabled={!content || !isEnabled}
         />
         <label
           className={['tab-label', isEnabled ? 'active' : ''].join(' ')}
