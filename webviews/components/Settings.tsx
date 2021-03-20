@@ -84,7 +84,6 @@ export const Settings: FC = () => {
 
   return (
     <div className="settings-container">
-      <button onClick={onLogoutClick}>Logout</button>
       <div className="settings-row">
         <label htmlFor="refresh-time">{minutesLabel}</label>
         <input
@@ -110,6 +109,9 @@ export const Settings: FC = () => {
           isChecked={showDrafts}
           onToggle={onShowDraftsChange}
         />
+      </div>
+      <div className="settings-row">
+        <button onClick={onLogoutClick}>Logout</button>
       </div>
     </div>
   );

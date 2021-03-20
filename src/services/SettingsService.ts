@@ -30,6 +30,6 @@ export class SettingsService {
   }
 
   public async resetSettings() {
-    await this.globalStateService.reset(SettingsService.SETTINGS);
+    await this.setSettings(SettingsService.defaultSettings);
   }
 }

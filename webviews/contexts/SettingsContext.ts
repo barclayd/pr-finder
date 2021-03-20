@@ -1,5 +1,11 @@
-import { SettingsService } from '../../src/services/SettingsService';
 import { createStateContext } from './createStateContext';
 
-export const defaultSettings = SettingsService.defaultSettings;
+const ONE_MINUTE = 1000 * 60;
+const THREE_MINUTES = ONE_MINUTE * 3;
+
+export const defaultSettings = {
+  showDrafts: true,
+  showNotifications: true,
+  refreshTime: THREE_MINUTES,
+};
 export const SettingsContext = createStateContext(defaultSettings);

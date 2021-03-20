@@ -60,7 +60,8 @@ export const SidebarContainer = () => {
           break;
         case Message.getTrackedRepos:
           const trackedRepos = message.value as GithubSearchRepo[] | undefined;
-          if (!trackedRepos || !trackedRepos) {
+          if (!trackedRepos) {
+            setDidFetchTrackedRepos(true);
             break;
           }
           const networkService = new NetworkService(localUserData.accessToken);
@@ -75,6 +76,7 @@ export const SidebarContainer = () => {
               })
               .filter(Boolean),
           )) as GithubSearchRepo[];
+          console.log(validatedRepos);
           setInitialTrackedRepos(validatedRepos);
           setDidFetchTrackedRepos(true);
       }

@@ -1,11 +1,6 @@
 import '../styles/accordion.css';
 import { FC } from 'react';
-
-interface AccordionItem {
-  name: string;
-  isEnabled: boolean;
-  content: JSX.Element | null;
-}
+import { AccordionItem } from '../types';
 
 interface Props {
   content: AccordionItem[];
@@ -19,7 +14,7 @@ export const Accordion: FC<Props> = ({ content }) => (
           className="accordion-input"
           type="checkbox"
           id={name}
-          disabled={!content}
+          disabled={!content || !isEnabled}
         />
         <label
           className={['tab-label', isEnabled ? 'active' : ''].join(' ')}

@@ -1,3 +1,5 @@
+import { PullRequest } from '../generated/graphql';
+
 export interface GithubSearchResult {
   items: GithubSearchRepo[];
 }
@@ -22,3 +24,13 @@ export type GlobalState = {
   activePullRequests: any;
   trackedRepos?: GithubSearchRepo[];
 };
+
+export interface AccordionItem {
+  name: string;
+  isEnabled: boolean;
+  content: JSX.Element | null;
+}
+
+export type PullRequests = PullRequest[];
+
+export type TrackedPullRequests = Record<string, PullRequests>;
