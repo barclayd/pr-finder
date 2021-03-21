@@ -1,8 +1,14 @@
 {
   "name": "pr-finder",
   "displayName": "pr-finder",
+  "publisher": "barclayd",
   "description": "Automatically find new PRs to review in the repos you care about ",
-  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/barclayd/pr-finder"
+  },
+  "icon": "media/icon.png",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.52.0"
   },
@@ -11,9 +17,6 @@
   ],
   "activationEvents": [
     "onView:pr-finder-sidebar",
-    "onCommand:pr-finder.askQuestion",
-    "onCommand:pr-finder.refresh",
-    "onCommand:pr-finder.addRepo",
     "onCommand:pr-finder.authenticate"
   ],
   "api": {
@@ -42,21 +45,6 @@
       ]
     },
     "commands": [
-      {
-        "command": "pr-finder.askQuestion",
-        "category": "PRFinder",
-        "title": "Ask Question"
-      },
-      {
-        "command": "pr-finder.refresh",
-        "category": "PRFinder",
-        "title": "Refresh"
-      },
-      {
-        "command": "pr-finder.addRepo",
-        "category": "PRFinder",
-        "title": "Add Repo"
-      },
       {
         "command": "pr-finder.authenticate",
         "category": "PRFinder",
