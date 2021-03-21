@@ -1,11 +1,11 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import typescript from '@rollup/plugin-typescript';
-import css from 'rollup-plugin-css-only';
 import fs from 'fs';
 import path from 'path';
+import css from 'rollup-plugin-css-only';
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 const production = !process.env.ROLLUP_WATCH || false;
 
@@ -30,7 +30,7 @@ export default fs
           dedupe: ['react', 'react-dom'],
         }),
         replace({
-          'process.env.NODE_ENV': JSON.stringify('development'),
+          'process.env.NODE_ENV': JSON.stringify('production'),
         }),
         commonjs(),
         typescript({

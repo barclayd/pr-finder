@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react';
 import { PullRequest } from '../generated/graphql';
 
 export interface GithubSearchResult {
@@ -19,6 +20,8 @@ export type Auth = {
 };
 
 export type State<T> = T & { setState: (partialState: Partial<T>) => void };
+
+export type SetState<T> = Dispatch<SetStateAction<T>>;
 
 export type PullRequests = PullRequest[];
 

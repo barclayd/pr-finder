@@ -1,7 +1,8 @@
-import { Dispatch, FC, SetStateAction } from 'react';
+import { FC } from 'react';
 import {
   AccordionItem,
   GithubSearchRepo,
+  SetState,
   TrackedPullRequests,
 } from '../../types';
 import { PRList } from '../PRList';
@@ -10,9 +11,9 @@ interface PRTabProps {
   trackedRepos: GithubSearchRepo[];
   openPRList?: string;
   accessToken: string;
-  setOpenPRList: Dispatch<SetStateAction<string | undefined>>;
+  setOpenPRList: SetState<string | undefined>;
   activePullRequests: TrackedPullRequests;
-  setActivePullRequests: Dispatch<SetStateAction<TrackedPullRequests>>;
+  setActivePullRequests: SetState<TrackedPullRequests>;
   username: string;
 }
 

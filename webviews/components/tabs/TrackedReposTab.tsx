@@ -1,9 +1,10 @@
-import { Dispatch, FC, SetStateAction } from 'react';
+import { FC } from 'react';
 import { Message } from '../../../globals/types';
 import { VSCodeService } from '../../services/VSCodeService';
 import {
   AccordionItem,
   GithubSearchRepo,
+  SetState,
   TrackedPullRequests,
 } from '../../types';
 import { TrashIcon } from '../icons/TrashIcon';
@@ -12,8 +13,8 @@ import { Table } from '../Table';
 interface TrackedReposTab {
   trackedRepos: GithubSearchRepo[];
   activePullRequests: TrackedPullRequests;
-  setActivePullRequests: Dispatch<SetStateAction<TrackedPullRequests>>;
-  setTrackedRepos: Dispatch<SetStateAction<GithubSearchRepo[]>>;
+  setActivePullRequests: SetState<TrackedPullRequests>;
+  setTrackedRepos: SetState<GithubSearchRepo[]>;
 }
 
 interface TrackedReposProps extends TrackedReposTab {}

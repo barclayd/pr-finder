@@ -103,8 +103,8 @@ export class Sidebar implements vscode.WebviewViewProvider {
           break;
         }
         case Message.onLogout: {
-          await this.settingsService.resetSettings();
           await this.userService.resetUser();
+          await this.settingsService.resetSettings();
           break;
         }
         case Message.onInfo: {
