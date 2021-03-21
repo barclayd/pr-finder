@@ -5,7 +5,7 @@ import { usePrevious } from '../hooks/usePrevious';
 import { useSettingsContext } from '../hooks/useSettingsContext';
 import { NetworkService } from '../services/NetworkService';
 import { VSCodeService } from '../services/VSCodeService';
-import { GithubSearchRepo, TrackedPullRequests } from '../types';
+import { GithubSearchRepo, PullRequests, TrackedPullRequests } from '../types';
 import { Accordion } from './Accordion';
 import { Settings } from './Settings';
 import { PRTab } from './tabs/PRTab';
@@ -18,56 +18,61 @@ interface Props {
   initialTrackedRepos: GithubSearchRepo[];
 }
 
-const pullRequestURLMapForRepo = (pullRequestsForRepo: any[]) =>
-  pullRequestsForRepo.reduce((acc: Map<string, boolean>, pullRequest) => {
-    if (!acc.get(pullRequest)) {
+const pullRequestURLMapForRepo = (pullRequestsForRepo: PullRequests) => {
+  return pullRequestsForRepo.reduce((acc, pullRequest) => {
+    if (!acc.get(pullRequest.url)) {
       acc.set(pullRequest.url, true);
     }
     return acc;
   }, new Map<string, boolean>([]));
+};
 
 const newPullRequests = (
-  pullRequestsInState: {},
-  newPullRequests: {},
+  pullRequestsInState: TrackedPullRequests,
+  newPullRequests: TrackedPullRequests,
 ): NewPullRequest[] | undefined => {
   if (pullRequestsInState === undefined || newPullRequests === undefined) {
     return;
   }
   const pullRequestURLMap = Object.keys(pullRequestsInState).reduce(
     (acc, repoName) => {
-      const pullRequestsForRepo: any[] =
+      const pullRequestsForRepo: PullRequests =
         pullRequestsInState[repoName as keyof typeof pullRequestsInState];
       const pullRequestsMapForRepo = pullRequestURLMapForRepo(
         pullRequestsForRepo,
       );
-      if (Array.from(acc.entries()).length > 0) {
-        acc = new Map([...acc, ...pullRequestsMapForRepo]);
-      } else {
-        acc = pullRequestsMapForRepo;
-      }
+      acc = new Map([...acc, ...pullRequestsMapForRepo]);
       return acc;
     },
     new Map<string, boolean>([]),
   );
 
-  const newPullRequestsUrls = Object.keys(newPullRequests).reduce(
-    (acc, repoName) => {
-      if (
-        pullRequestsInState[repoName as keyof typeof pullRequestsInState] ===
-        undefined
-      ) {
-        return acc;
-      }
-      const prsForRepo: any[] =
-        newPullRequests[repoName as keyof typeof newPullRequests];
-      if (!prsForRepo) {
-        return acc;
-      }
-      acc.push(...prsForRepo.map((pr) => ({ ...pr, repoName })));
+  const newPullRequestsUrls = Object.keys(newPullRequests).reduce<
+    NewPullRequest[]
+  >((acc, repoName) => {
+    if (
+      pullRequestsInState[repoName as keyof typeof pullRequestsInState] ===
+      undefined
+    ) {
       return acc;
-    },
-    [] as any[],
-  );
+    }
+    const prsForRepo: PullRequests =
+      newPullRequests[repoName as keyof typeof newPullRequests];
+    if (!prsForRepo) {
+      return acc;
+    }
+    acc.push(
+      ...prsForRepo.map((pr) => ({
+        ...pr,
+        repoName,
+        author: {
+          login: pr.author?.login,
+          avatarUrl: pr.author?.avatarUrl,
+        },
+      })),
+    );
+    return acc;
+  }, []);
 
   return newPullRequestsUrls.filter(
     (pullRequest) => !pullRequestURLMap.has(pullRequest.url),

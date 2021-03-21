@@ -76,7 +76,6 @@ export const SidebarContainer = () => {
               })
               .filter(Boolean),
           )) as GithubSearchRepo[];
-          console.log(validatedRepos);
           setInitialTrackedRepos(validatedRepos);
           setDidFetchTrackedRepos(true);
       }

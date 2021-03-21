@@ -20,8 +20,8 @@ export interface VSCodeData {
 
 export interface NewPullRequest {
   author: {
-    login: string;
-    avatarUrl: string;
+    login?: string;
+    avatarUrl?: string;
   };
   repoName: string;
   title: string;

@@ -3,7 +3,6 @@
 import * as vscode from 'vscode';
 import { Message } from '../globals/types';
 import { authenticate } from './authenticate';
-import { Panel } from './Panel';
 import { GlobalStateService } from './services/GlobalStateService';
 import { SettingsService } from './services/SettingsService';
 import { UserService } from './services/UserService';
@@ -22,10 +21,6 @@ export async function activate({
   const settingsService = new SettingsService(globalStateService);
 
   await settingsService.init();
-  console.log('user success ' + JSON.stringify(userService.getUser()));
-  console.log(
-    'settings success ' + JSON.stringify(settingsService.getSettings()),
-  );
   const sidebar = new Sidebar(extensionUri, userService, settingsService);
   subscriptions.push(
     vscode.window.registerWebviewViewProvider('pr-finder-sidebar', sidebar),

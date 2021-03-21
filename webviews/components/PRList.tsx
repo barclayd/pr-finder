@@ -1,5 +1,5 @@
 import '../styles/PRList.css';
-import { FC, useEffect } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { Message } from '../../globals/types';
 import {
@@ -24,7 +24,7 @@ interface PRListProps {
   onOpenListClick: () => void;
   repoUrl: string;
   activePullRequests: TrackedPullRequests;
-  setActivePullRequests: (prList: TrackedPullRequests) => void;
+  setActivePullRequests: Dispatch<SetStateAction<TrackedPullRequests>>;
 }
 
 const goToPage = (url: string) => {
@@ -125,14 +125,16 @@ export const PRList: FC<PRListProps> = ({
           username,
         }),
     );
-    const updatedPullRequests = {
-      ...activePullRequests,
+    setActivePullRequests((prevState) => ({
+      ...prevState,
       [repoName]: pullRequestsWaitingReview,
-    };
-    setActivePullRequests(updatedPullRequests);
+    }));
   }, [prData, showDrafts]);
 
-  if (activePullRequests[repoName as any]?.length === 0) {
+  if (
+    activePullRequests[repoName as keyof typeof activePullRequests]?.length ===
+    0
+  ) {
     return fallback;
   }
 
@@ -144,7 +146,10 @@ export const PRList: FC<PRListProps> = ({
     <span className="pr-title" onClick={() => goToPage(repoUrl + '/pulls')}>
       {repoName.toLowerCase()}{' '}
       <span className="pr-count">
-        {`(${activePullRequests[repoName as any]?.length})` ?? ''}
+        {`(${
+          activePullRequests[repoName as keyof typeof activePullRequests]
+            ?.length
+        })` ?? ''}
       </span>
     </span>
   );
