@@ -1,6 +1,7 @@
 {
   "name": "pr-finder",
   "displayName": "pr-finder",
+  "publisher": "Daniel Barclay",
   "description": "Automatically find new PRs to review in the repos you care about ",
   "icon": "media/icon.png",
   "version": "0.0.1",
