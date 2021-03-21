@@ -15,7 +15,7 @@ export interface GithubSearchRepo {
 export type Auth = {
   accessToken?: string;
   githubUsername?: string;
-  userOnServerStatus?: string;
+  userOnServerStatus?: 'fetching' | 'notFound' | 'found';
 };
 
 export type State<T> = T & { setState: (partialState: Partial<T>) => void };
