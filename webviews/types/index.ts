@@ -20,8 +20,12 @@ export type Auth = {
 
 export type State<T> = T & { setState: (partialState: Partial<T>) => void };
 
+export type PullRequests = PullRequest[];
+
+export type TrackedPullRequests = Record<string, PullRequests>;
+
 export type GlobalState = {
-  activePullRequests: any;
+  activePullRequests: PullRequests;
   trackedRepos?: GithubSearchRepo[];
 };
 
@@ -30,7 +34,3 @@ export interface AccordionItem {
   isEnabled: boolean;
   content: JSX.Element | null;
 }
-
-export type PullRequests = PullRequest[];
-
-export type TrackedPullRequests = Record<string, PullRequests>;
