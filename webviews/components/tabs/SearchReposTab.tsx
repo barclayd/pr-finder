@@ -1,4 +1,5 @@
 import { useCombobox } from 'downshift';
+import type { DebouncedFunc } from 'lodash';
 import debounce from 'lodash/debounce';
 import {
   Dispatch,
@@ -28,6 +29,12 @@ interface SearchReposTab {
   networkService: NetworkService;
 }
 interface SearchReposProps extends SearchReposTab {}
+
+type DownshiftInput = { inputValue?: string };
+
+type LodashDebounceFunc = DebouncedFunc<
+  (downshiftInput: DownshiftInput) => void
+>;
 
 const disabledGithubRepo = '!disabled!';
 
@@ -71,10 +78,10 @@ const SearchRepos: FC<SearchReposProps> = ({
 
   const [showRestrictionPrompt, setShowRestrictionPrompt] = useState(false);
 
-  const [userInput, setUserInput] = useState('');
-  const debounceUserInput = useRef<any>(null);
-  const setValidatedUserInput = (downshiftInput: any) => {
-    setUserInput(downshiftInput.inputValue);
+  const [userInput, setUserInput] = useState<string | undefined>('');
+  const debounceUserInput = useRef<LodashDebounceFunc | null>(null);
+  const setValidatedUserInput = ({ inputValue }: DownshiftInput) => {
+    setUserInput(inputValue);
   };
   if (!debounceUserInput.current) {
     debounceUserInput.current = debounce(setValidatedUserInput, 500);
