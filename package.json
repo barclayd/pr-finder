@@ -2,6 +2,7 @@
   "name": "pr-finder",
   "displayName": "pr-finder",
   "description": "Automatically find new PRs to review in the repos you care about ",
+  "icon": "media/icon.png",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.52.0"
