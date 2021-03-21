@@ -1,35 +1,45 @@
-# pr-finder README
+# PR Finder VSCode Extension
 
-This is the README for your extension "pr-finder". After writing up a brief description, we recommend including the following sections.
+Introducing PR Finder, a developer's best friend for being automatically notified about pull requests in the repositories that you care about.
+
+<p align="center">
+<img width="574" alt="Screenshot 2021-03-21 at 17 51 10" src="https://user-images.githubusercontent.com/39765499/111915660-56f79080-8a6f-11eb-94c0-08d2d97c4339.png">
+</p>
+
+_Reduce the development feedback loop and ship code quicker!_
+
+Select repos you want to track and PR Finder will send you a notification when a pull request has been submitted. Once reviewed or merged, the PR will be marked off the list - making way for new PRs to review.
+
+PR Finder works with all types of repos, including organisation repos - except for GitHub Enterprise (support planned for Enterprise at a later date).
+
+Use PR Finder to save the pain in notifying your teammates about PRs and let PR Finder do the hard work for you without any dither or delay.
+
+---
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+* Search personal and organisation repos to track
+* Get notifications of new PRs in the repos you care about  
+* Simple, intuitive UI that is right at home in VSCode
+* Customise settings to your liking
 
-For example if there is an image subfolder under your extension project workspace:
+<p align="center">
+<img width="574" alt="Screenshot 2021-03-21 at 17 51 42" src="https://user-images.githubusercontent.com/39765499/111915707-83aba800-8a6f-11eb-9dbb-a133c03cff92.png">
+</p>
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+---
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+* Requires a GitHub account
 
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
+---
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* Support for GitHub Enterprise repos to come soon, in active development
+
+---
 
 ## Release Notes
 
@@ -37,29 +47,4 @@ Users appreciate release notes as you update your extension.
 
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-- Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-- Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release of PR Finder
