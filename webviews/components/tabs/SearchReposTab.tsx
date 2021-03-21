@@ -9,8 +9,8 @@ import {
   GithubSearchRepo,
   GithubSearchResult,
 } from '../../types';
-import { SearchIcon } from '../icons/SearchIcon';
-import { SearchOrgs } from '../SearchOrgs';
+import { SearchOrgs, SearchOrgsProps } from '../SearchOrgs';
+import { SearchDropdown, SearchDropdownProps } from './SearchDropdown';
 
 interface SearchReposTab {
   trackedRepos: GithubSearchRepo[];
@@ -110,16 +110,6 @@ const SearchRepos: FC<SearchReposProps> = ({
     );
   };
 
-  const isNoResults =
-    filteredRepos.length === 1 && filteredRepos[0].name === disabledGithubRepo;
-
-  const openDropdown = () => {
-    if (inputValue.trim().length === 0) {
-      return;
-    }
-    openMenu();
-  };
-
   const {
     isOpen,
     getToggleButtonProps,
@@ -170,74 +160,34 @@ const SearchRepos: FC<SearchReposProps> = ({
     },
   });
 
-  const showFoundResults = isOpen && !isNoResults;
+  const searchOrgsProps: SearchOrgsProps = {
+    accessToken,
+    username,
+    networkService,
+    closeMenu,
+    setFilteredRepos,
+    setSelectedOrganisation,
+    setInputValue,
+  };
+
+  const searchDropdownProps: SearchDropdownProps = {
+    filteredRepos,
+    disabledGithubRepo,
+    inputValue,
+    highlightedIndex,
+    openMenu,
+    isOpen,
+    getComboboxProps,
+    getToggleButtonProps,
+    getMenuProps,
+    getInputProps,
+    getItemProps,
+  };
 
   return (
     <>
-      <SearchOrgs
-        accessToken={accessToken}
-        username={username}
-        networkService={networkService}
-        closeMenu={closeMenu}
-        setFilteredRepos={setFilteredRepos}
-        setSelectedOrganisation={setSelectedOrganisation}
-        setInputValue={setInputValue}
-      />
-      <div className="input-wrapper" {...getComboboxProps()}>
-        <button
-          type="button"
-          className="search-button"
-          {...getToggleButtonProps()}
-          aria-label="toggle menu"
-          style={{
-            width: '20%',
-          }}
-        >
-          <SearchIcon />
-        </button>
-        <input
-          {...getInputProps()}
-          onFocus={() => openDropdown()}
-          style={{ width: '80%' }}
-        />
-      </div>
-      <ul
-        {...getMenuProps()}
-        style={{
-          maxHeight: 80,
-          maxWidth: 300,
-          overflowY: 'scroll',
-          backgroundColor: 'var(--vscode-button-secondaryBackground)',
-          color: 'var(--vscode-button-secondaryForeground)',
-          padding: 0,
-          listStyle: 'none',
-          position: 'relative',
-        }}
-      >
-        {isNoResults &&
-          filteredRepos.map((item, index) => (
-            <li
-              className="dropdown-list-item disabled-list-item"
-              key={item.name}
-              {...getItemProps({ item, index, disabled: true })}
-            >
-              No results found
-            </li>
-          ))}
-        {showFoundResults &&
-          filteredRepos.map((item, index) => (
-            <li
-              className="dropdown-list-item"
-              style={
-                highlightedIndex === index ? { backgroundColor: '#bde4ff' } : {}
-              }
-              key={`${item}${index}`}
-              {...getItemProps({ item, index })}
-            >
-              {item.name}
-            </li>
-          ))}
-      </ul>
+      <SearchOrgs {...searchOrgsProps} />
+      <SearchDropdown {...searchDropdownProps} />
     </>
   );
 };
