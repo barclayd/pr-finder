@@ -1,16 +1,19 @@
 import { UseComboboxActions } from 'downshift';
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { GithubUserOrganisation } from '../../src/types';
 import { useAsyncEffect } from '../hooks/useAsyncEffect';
 import { NetworkService } from '../services/NetworkService';
-import { GithubSearchRepo } from '../types';
+import { GithubSearchRepo, SetState } from '../types';
 import { CloseIcon } from './icons/CloseIcon';
 
-interface SearchOrgsProps
-  extends Pick<UseComboboxActions<void>, 'setInputValue' | 'closeMenu'> {
-  setFilteredRepos: Dispatch<SetStateAction<GithubSearchRepo[]>>;
+export interface SearchOrgsProps
+  extends Pick<
+    UseComboboxActions<GithubSearchRepo>,
+    'setInputValue' | 'closeMenu'
+  > {
+  setFilteredRepos: SetState<GithubSearchRepo[]>;
   selectedOrganisation?: string;
-  setSelectedOrganisation: Dispatch<SetStateAction<string | undefined>>;
+  setSelectedOrganisation: SetState<string | undefined>;
   networkService: NetworkService;
   username: string;
   accessToken: string;

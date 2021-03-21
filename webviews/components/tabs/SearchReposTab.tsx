@@ -1,21 +1,22 @@
 import { useCombobox } from 'downshift';
 import type { DebouncedFunc } from 'lodash';
 import debounce from 'lodash/debounce';
-import { Dispatch, FC, SetStateAction, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { useAsyncEffect } from '../../hooks/useAsyncEffect';
 import { NetworkService } from '../../services/NetworkService';
 import {
   AccordionItem,
   GithubSearchRepo,
   GithubSearchResult,
+  SetState,
 } from '../../types';
 import { SearchOrgs, SearchOrgsProps } from '../SearchOrgs';
 import { SearchDropdown, SearchDropdownProps } from './SearchDropdown';
 
 interface SearchReposTab {
   trackedRepos: GithubSearchRepo[];
-  setTrackedRepos: Dispatch<SetStateAction<GithubSearchRepo[]>>;
-  setOpenPRList: Dispatch<SetStateAction<string | undefined>>;
+  setTrackedRepos: SetState<GithubSearchRepo[]>;
+  setOpenPRList: SetState<string | undefined>;
   username: string;
   accessToken: string;
   networkService: NetworkService;

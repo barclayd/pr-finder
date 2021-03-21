@@ -1,5 +1,5 @@
 import '../styles/PRList.css';
-import { Dispatch, FC, SetStateAction, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { Message } from '../../globals/types';
 import {
@@ -12,7 +12,7 @@ import {
 import { useSettingsContext } from '../hooks/useSettingsContext';
 import { GraphQLService } from '../services/GraphQLService';
 import { VSCodeService } from '../services/VSCodeService';
-import { PullRequests, TrackedPullRequests } from '../types';
+import { PullRequests, SetState, TrackedPullRequests } from '../types';
 import { Table } from './Table';
 
 interface PRListProps {
@@ -24,7 +24,7 @@ interface PRListProps {
   onOpenListClick: () => void;
   repoUrl: string;
   activePullRequests: TrackedPullRequests;
-  setActivePullRequests: Dispatch<SetStateAction<TrackedPullRequests>>;
+  setActivePullRequests: SetState<TrackedPullRequests>;
 }
 
 const goToPage = (url: string) => {
