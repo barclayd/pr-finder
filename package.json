@@ -1,10 +1,14 @@
 {
   "name": "pr-finder",
   "displayName": "pr-finder",
-  "publisher": "Daniel Barclay",
+  "publisher": "barclayd",
   "description": "Automatically find new PRs to review in the repos you care about ",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/barclayd/pr-finder"
+  },
   "icon": "media/icon.png",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.52.0"
   },
