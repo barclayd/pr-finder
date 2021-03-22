@@ -26,6 +26,9 @@ export const SidebarContainer = () => {
   const [didFetchTrackedRepos, setDidFetchTrackedRepos] = useState(false);
 
   useEffect(() => {
+    VSCodeService.sendMessage(Message.getUser);
+    VSCodeService.sendMessage(Message.getSettings);
+
     let localUserData: { accessToken?: string; githubUsername?: string } = {
       accessToken: undefined,
       githubUsername: undefined,
@@ -80,9 +83,6 @@ export const SidebarContainer = () => {
           setDidFetchTrackedRepos(true);
       }
     });
-
-    VSCodeService.sendMessage(Message.getUser);
-    VSCodeService.sendMessage(Message.getSettings);
   }, []);
 
   const onLoginClick = () => {
@@ -90,6 +90,10 @@ export const SidebarContainer = () => {
   };
 
   const isNoUser = !accessToken || !githubUsername;
+
+  if (userOnServerStatus === 'notFound') {
+    return <button onClick={onLoginClick}>Login with Github</button>;
+  }
 
   if (isNoUser && userOnServerStatus === 'fetching') {
     return <div>Loading...</div>;
