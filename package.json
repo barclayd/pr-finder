@@ -8,7 +8,7 @@
     "url": "https://github.com/barclayd/pr-finder"
   },
   "icon": "media/icon.png",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engines": {
     "vscode": "^1.52.0"
   },
@@ -17,7 +17,8 @@
   ],
   "activationEvents": [
     "onView:pr-finder-sidebar",
-    "onCommand:pr-finder.authenticate"
+    "onCommand:pr-finder.authenticate",
+    "onCommand:pr-finder.refresh"
   ],
   "api": {
     "production": "https://r997n84ck8.execute-api.eu-west-2.amazonaws.com/production"
@@ -49,6 +50,11 @@
         "command": "pr-finder.authenticate",
         "category": "PRFinder",
         "title": "Authenticate"
+      },
+      {
+        "command": "pr-finder.refresh",
+        "category": "PRFinder",
+        "title": "Refresh"
       }
     ]
   },
