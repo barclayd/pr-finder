@@ -2,13 +2,13 @@
   "name": "pr-finder",
   "displayName": "pr-finder",
   "publisher": "barclayd",
-  "description": "Automatically find new PRs to review in the repos you care about ",
+  "description": "Automatically find new PRs to review in the repos you care about",
   "repository": {
     "type": "git",
     "url": "https://github.com/barclayd/pr-finder"
   },
   "icon": "media/icon.png",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.52.0"
   },
@@ -53,17 +53,14 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack --config build/node-extension.webpack.config.js",
-    "watch": "concurrently \"rollup -c -w\" \"webpack --watch --config build/node-extension.webpack.config.js\"",
-    "package": "webpack --mode production --devtool hidden-source-map --config build/node-extension.webpack.config.js",
-    "test-compile": "tsc -p pr-finder",
-    "test-watch": "tsc -watch -p pr-finder",
+    "vscode:prepublish": "npm run compile",
+    "compile": "rollup -c && webpack --mode production",
+    "watch": "concurrently \"rollup -c -w\" \"webpack --mode development --watch\"",
     "pretest": "npm run test-compile && npm run lint",
+    "test": "node ./out/test/runTest.js",
     "lint": "eslint '*/**/*.{js,ts,tsx,md}' --fix",
     "prettier": "prettier --loglevel warn --write '**/*.{js,json,md,ts}'",
-    "generate:api:types": "graphql-codegen --config codegen.yml",
-    "test": "node ./out/test/runTest.js"
+    "generate:api:types": "graphql-codegen --config codegen.yml"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -100,8 +97,8 @@
     "ts-loader": "^8.0.11",
     "typescript": "^4.1.2",
     "vscode-test": "^1.4.1",
-    "webpack": "^5.10.0",
-    "webpack-cli": "^4.2.0"
+    "webpack": "^5.27.1",
+    "webpack-cli": "^4.5.0"
   },
   "dependencies": {
     "axios": "^0.21.1",
