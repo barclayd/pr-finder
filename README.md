@@ -1,12 +1,12 @@
 # PR Finder VSCode Extension
 
+***Reduce the development feedback loop and ship code quicker!***
+
 Introducing PR Finder, a developer's best friend for being automatically notified about pull requests in the repositories that you care about.
 
 <p align="center">
-<img width="574" alt="Screenshot 2021-03-21 at 17 51 10" src="https://user-images.githubusercontent.com/39765499/111915660-56f79080-8a6f-11eb-94c0-08d2d97c4339.png">
+<img width="80%" alt="Screenshot 2021-03-22 at 11 05 00" src="https://user-images.githubusercontent.com/39765499/111980639-7c7fab00-8afe-11eb-9be1-736b05fa364d.png">
 </p>
-
-_Reduce the development feedback loop and ship code quicker!_
 
 Select repos you want to track and PR Finder will send you a notification when a pull request has been submitted. Once reviewed or merged, the PR will be marked off the list - making way for new PRs to review.
 
