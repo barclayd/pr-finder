@@ -8,7 +8,7 @@
     "url": "https://github.com/barclayd/pr-finder"
   },
   "icon": "media/icon.png",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "engines": {
     "vscode": "^1.52.0"
   },

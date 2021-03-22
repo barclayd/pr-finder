@@ -43,8 +43,6 @@ Use PR Finder to save the pain in notifying your teammates about PRs and let PR 
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
-### 1.0.6
+### 1.0.8
 
 Initial release of PR Finder VSCode Extension
